@@ -55,9 +55,9 @@ int  do_the_needful(options_t *options);
 int main(int argc, char *argv[]) {
   /* 7 command-line parsing */
   int opt;
-  options_t options = { 0, 0x0, stdin, stdout };
+  options_t options = { 0, 0x0, stdin, stdout }; //default values
 
-  opterr = 0;
+  opterr = 0; //disables getopt from emmiting a ?
 
   while ((opt = getopt(argc, argv, OPTSTR)) != EOF)
     switch(opt) {
