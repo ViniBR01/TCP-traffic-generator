@@ -4,14 +4,16 @@
 //to-do XXX
 
 /* 1 includes */
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <unistd.h>
-#include <libgen.h>
-#include <errno.h>
-#include <string.h>
-#include <getopt.h>
+//Check /usr/include to learn about the standard C library
+#include <stdio.h>  //FILE, stdin, stdout, stderr, and the fprint()
+#include <stdlib.h> //malloc(), calloc(), and realloc()
+#include <stdint.h> //special types such as uint32_t
+#include <unistd.h> //EXIT_FAILURE, EXIT_SUCCESS
+#include <libgen.h> //basename() function
+#include <errno.h>  //defines external errno var and the values it can take on
+#include <string.h> //memcpy(), memset(), and the strlen() family
+#include <getopt.h> //external optarg, opterr, optind, and getopt() function
+
 
 /* 2 defines */
 #define OPTSTR "vi:o:f:h"
