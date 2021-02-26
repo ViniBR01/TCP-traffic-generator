@@ -1,11 +1,19 @@
-/* main.c - the complete listing */
+/* main.c - TCP traffic generator for experiments
+Author: Vinicius Da Silva
+Date Feb 26 2021
+
+references:
+how to write a good main file: https://opensource.com/article/19/5/how-write-good-c-main-function
+how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-file-c-part-1
+                            https://opensource.com/article/19/7/structure-multi-file-c-part-2
+*/
 
 /* 0 copyright/licensing */
 //to-do XXX
 
 /* 1 includes */
 //Check /usr/include to learn about the standard C library
-#include <stdio.h>  //FILE, stdin, stdout, stderr, and the fprint()
+#include <stdio.h>  //FILE, stdin, stdout, stderr, and the fprint() family
 #include <stdlib.h> //malloc(), calloc(), and realloc()
 #include <stdint.h> //special types such as uint32_t
 #include <unistd.h> //EXIT_FAILURE, EXIT_SUCCESS
@@ -16,8 +24,9 @@
 
 
 /* 2 defines */
+//colon mandates an argument in OPTSTR; W is reserved for long options
 #define OPTSTR "vi:o:f:h"
-#define USAGE_FMT  "%s [-v] [-f hexflag] [-i inputfile] [-o outputfile] [-h]"
+#define USAGE_FMT  "%s [-v] [-f hexflag] [-i inputfile] [-o outputfile] [-h]\n"
 #define ERR_FOPEN_INPUT  "fopen(input, r)"
 #define ERR_FOPEN_OUTPUT "fopen(output, w)"
 #define ERR_DO_THE_NEEDFUL "do_the_needful blew up"
