@@ -1,2 +1,5 @@
-main: main.c
-	gcc -o main main.c -I.
+CC=gcc
+CFLAGS=-I.
+
+main: main.o
+	$(CC) -o main main.o -I.
