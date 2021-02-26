@@ -6,6 +6,7 @@
 /* 1 includes */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <libgen.h>
 #include <errno.h>
