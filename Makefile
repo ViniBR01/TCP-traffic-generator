@@ -1,10 +1,28 @@
 #reference: https://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/
-CC=gcc
-CFLAGS=-I.
-DEPS = main.h
+SERVER= start-server
+CLIENT= start-client
 
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+TARGETS= $(SERVER) $(CLIENT)
 
-main: main.o
-	$(CC) -o main main.o
+SRC= main.c
+OBJ= $(SRC:.c=.o)
+HDR= $(SRC:.c=.h)
+
+CC= gcc
+CFLAGS= -I.
+
+.PHONY: clean
+
+all: $(TARGETS)
+
+$(SERVER): $(OBJ)
+	$(CC) -o $@ $(OBJ) $(CFLAGS)
+
+.c.o: $(HDR)
+	$(CC) -o $@ $(OBJ) $(CFLAGS)
+
+$(CLIENT): $(SERVER)
+	ln -f $< $@
+
+clean:
+	rm -f $(OBJ) *~ 
