@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
   opterr = 0; //disables getopt from emmiting a ?
 
-  while ((opt = getopt(argc, argv, OPTSTR)) != EOF)
+  while ((opt = getopt(argc, argv, OPTSTR)) != EOF) {
     switch(opt) {
     case 'i':
       if (!(options.input = fopen(optarg, "r")) ){
@@ -98,6 +98,22 @@ int main(int argc, char *argv[]) {
       /* NOTREACHED */
       break;
     }
+  }
+
+  switch(tcp_op) {
+    case TCP_OP_CLIENT:
+      /* CALL THE FUNCTIONS RELATED TO CLIENT EXECUTION XXX */
+      break;
+    
+    case TCP_OP_SERVER:
+      /* CALL THE FUNCTIONS RELATED TO SERVER EXECUTION XXX */
+      break;
+    
+    default:
+      errno = EINVAL;
+      fprintf(stderr, "Impossible mode: %s tcp_op=%d/n", argv[0], tcp_op);
+      break;
+  }
 
   if (do_the_needful(&options) != EXIT_SUCCESS) {
     perror(ERR_DO_THE_NEEDFUL);
@@ -110,13 +126,13 @@ int main(int argc, char *argv[]) {
 
 /* 8 function declarations */
 void usage(char *progname, int opt) {
-  if (!argv0) {
+  if (!progname) {
     errno = EINVAL;
     perror("main:usage called with NULL argv[0]");
     exit(EXIT_FAILURE);
   }
   
-  fprintf(stderr, "usage: %s [-i input] [-o output] [-V]\n", basename(argv0));
+  fprintf(stderr, "usage: %s [-i input] [-o output] [-V]\n", basename(progname));
   if (opt != '?') {
     fprintf(stderr, "unknown option: \"%c\"\n", opt);
   }
