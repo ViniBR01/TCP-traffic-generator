@@ -13,6 +13,4 @@ typedef struct {
   FILE         *output;
 } options_t;
 
-#define OPTIONS_INIT { stdin, stdout, QUIET }
-
 #endif	/* _MAIN_H */
