@@ -33,9 +33,9 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 #define ERR_FOPEN_OUTPUT "fopen(output, w)"
 #define ERR_DO_THE_NEEDFUL "do_the_needful blew up"
 #define DEFAULT_PROGNAME "start_server"
-#define TCP_OP_SERVER 0
+#define TCP_OP_INVALID 0
 #define TCP_OP_SERVER 1
-#define TCP_OP_SERVER 2
+#define TCP_OP_CLIENT 2
 
 /* 3 external declarations */
 extern int errno;
