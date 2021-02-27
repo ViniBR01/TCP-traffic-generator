@@ -11,7 +11,7 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 /* 0 copyright/licensing */
 //to-do XXX
 
-/* 1 includes */
+/* 1.1 system includes */
 //Check /usr/include to learn about the standard C library
 #include <stdio.h>  //FILE, stdin, stdout, stderr, and the fprint() family
 #include <stdlib.h> //malloc(), calloc(), and realloc()
@@ -22,6 +22,8 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 #include <string.h> //memcpy(), memset(), and the strlen() family
 #include <getopt.h> //external optarg, opterr, optind, and getopt() function
 
+/* 1.2 project includes */
+#include "main.h"
 
 /* 2 defines */
 //colon mandates an argument in OPTSTR; W is reserved for long options
@@ -30,7 +32,10 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 #define ERR_FOPEN_INPUT  "fopen(input, r)"
 #define ERR_FOPEN_OUTPUT "fopen(output, w)"
 #define ERR_DO_THE_NEEDFUL "do_the_needful blew up"
-#define DEFAULT_PROGNAME "george"
+#define DEFAULT_PROGNAME "start_server"
+#define TCP_OP_SERVER 0
+#define TCP_OP_SERVER 1
+#define TCP_OP_SERVER 2
 
 /* 3 external declarations */
 extern int errno;
@@ -50,7 +55,8 @@ int dumb_global_variable = -11;
 
 /* 6 function prototypes */
 void usage(char *progname, int opt);
-int  do_the_needful(options_t *options);
+int pick_operation(char *);
+int do_the_needful(options_t *options);
 
 int main(int argc, char *argv[]) {
   /* 7 command-line parsing */
@@ -106,6 +112,26 @@ void usage(char *progname, int opt) {
   fprintf(stderr, USAGE_FMT, progname?progname:DEFAULT_PROGNAME);
   exit(EXIT_FAILURE);
   /* NOTREACHED */
+}
+
+int pick_operation(char *argv0)
+{
+  char *name;
+  
+  if (!argv0) {
+    errno = EINVAL;
+    return TCP_OP_INVALID;
+  }
+  
+  name = basename(argv0);
+
+  if (strncmp(name, CMD_SERVER, strlen(CMD_SERVER)) == 0)
+    return TCP_OP_SERVER;
+
+  if (strncmp(name, CMD_CLIENT, strlen(CMD_CLIENT)) == 0) 
+    return TCP_OP_CLIENT;  
+  
+  return TCP_OP_INVALID;
 }
 
 int do_the_needful(options_t *options) {
