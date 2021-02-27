@@ -103,10 +103,12 @@ int main(int argc, char *argv[]) {
   switch(tcp_op) {
     case TCP_OP_CLIENT:
       /* CALL THE FUNCTIONS RELATED TO CLIENT EXECUTION XXX */
+      printf("Entering client mode operation./n");
       break;
     
     case TCP_OP_SERVER:
       /* CALL THE FUNCTIONS RELATED TO SERVER EXECUTION XXX */
+      printf("Entering server mode operation./n");
       break;
     
     default:
@@ -115,11 +117,13 @@ int main(int argc, char *argv[]) {
       break;
   }
 
+/* example of how to call a function safely from the main function
   if (do_the_needful(&options) != EXIT_SUCCESS) {
     perror(ERR_DO_THE_NEEDFUL);
     exit(EXIT_FAILURE);
-    /* NOTREACHED */
+    /* NOTREACHED *//*
   }
+*/
 
   return EXIT_SUCCESS;
 }
