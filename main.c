@@ -45,7 +45,6 @@ extern int opterr, optind;
 /* 4 typedefs */
 
 /* 5 global variable declarations */
-int dumb_global_variable = -11;
 
 /* 6 function prototypes */
 void usage(char *progname, int opt);
@@ -103,8 +102,17 @@ int main(int argc, char *argv[]) {
 
 /* 8 function declarations */
 void usage(char *progname, int opt) {
-  fprintf(stderr, USAGE_FMT, progname?progname:DEFAULT_PROGNAME);
-  exit(EXIT_FAILURE);
+  if (!argv0) {
+    errno = EINVAL;
+    perror("main:usage called with NULL argv[0]");
+    exit(-1);
+  }
+  
+  fprintf(stderr, "usage: %s [-i input] [-o output] [-V]\n",
+	  basename(argv0));
+  if (opt != '?')
+    fprintf(stderr, "unknown option: \"%c\"\n", opt);
+  exit(-1);
   /* NOTREACHED */
 }
 
