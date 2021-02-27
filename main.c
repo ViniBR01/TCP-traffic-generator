@@ -43,12 +43,6 @@ extern char *optarg;
 extern int opterr, optind;
 
 /* 4 typedefs */
-typedef struct {
-  int           verbose;
-  uint32_t      flags;
-  FILE         *input;
-  FILE         *output;
-} options_t;
 
 /* 5 global variable declarations */
 int dumb_global_variable = -11;
