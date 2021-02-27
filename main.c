@@ -9,7 +9,6 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 */
 
 /* 0 copyright/licensing */
-//to-do XXX
 
 /* 1.1 system includes */
 //Check /usr/include to learn about the standard C library
@@ -53,6 +52,15 @@ int do_the_needful(options_t *options);
 
 int main(int argc, char *argv[]) {
   /* 7 command-line parsing */
+  int tcp_op = TCP_OP_INVALID;
+
+  if ((tcp_op = pick_operation(argv[0])) == TCP_OP_INVALID) {
+    errno = EINVAL;
+    perror("start-server/start-client argv[0] not recognized.");
+    exit(EXIT_FAILURE);
+    /* NOTREACHED */
+  }
+
   int opt;
   options_t options = { 0, 0x0, stdin, stdout }; //default values
 
@@ -105,14 +113,14 @@ void usage(char *progname, int opt) {
   if (!argv0) {
     errno = EINVAL;
     perror("main:usage called with NULL argv[0]");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
   
-  fprintf(stderr, "usage: %s [-i input] [-o output] [-V]\n",
-	  basename(argv0));
-  if (opt != '?')
+  fprintf(stderr, "usage: %s [-i input] [-o output] [-V]\n", basename(argv0));
+  if (opt != '?') {
     fprintf(stderr, "unknown option: \"%c\"\n", opt);
-  exit(-1);
+  }
+  exit(EXIT_FAILURE);
   /* NOTREACHED */
 }
 
