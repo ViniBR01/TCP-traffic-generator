@@ -4,7 +4,11 @@
 #define _SERVER_H
 
 //#include <stdio.h>
+//#include <stdlib.h>
+#include <stdint.h>
 
-int server();
+#include "main.h"
+
+int server(options_t *options);
 
 #endif  /* _SERVER_H */

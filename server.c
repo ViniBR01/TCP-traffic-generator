@@ -6,7 +6,15 @@
 
 #include "server.h"
 
-int server() {
+int server(options_t *options) {
     printf("Inside of the server function.\n");
+
+    if (!options) {
+        errno = EINVAL;
+        return EXIT_FAILURE;
+    }
+
+    /* XXX do server stuff */
+
     return EXIT_SUCCESS;
 }
