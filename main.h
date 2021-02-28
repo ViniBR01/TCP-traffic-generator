@@ -8,7 +8,7 @@
 
 typedef struct {
   int           verbose;
-  //uint32_t      flags;
+  //uint32_t    flags;
   //FILE       *configs;
   uint32_t      port;
   char         *remote_ip;

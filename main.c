@@ -30,8 +30,8 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 //colon mandates an argument in OPTSTR; W is reserved for long options
 #define OPTSTR "vp:i:t:f:h"
 #define USAGE_FMT  "%s [-v] [-f hexflag] [-i inputfile] [-o outputfile] [-h]\n"
-//#define ERR_FOPEN_INPUT  "fopen(input, r)"
-//#define ERR_FOPEN_OUTPUT "fopen(output, w)"
+//#define ERR_FOPEN_INPUT  "fopen(input, r) XXX"
+//#define ERR_FOPEN_OUTPUT "fopen(output, w) XXX"
 #define ERR_CLIENT "client function blew up"
 #define ERR_SERVER "server function blew up"
 #define DEFAULT_PROGNAME "start_server"
@@ -71,41 +71,33 @@ int main(int argc, char *argv[]) {
 
   while ((opt = getopt(argc, argv, OPTSTR)) != EOF) {
     switch(opt) {
+      //case 'c':
+        //   if (!(options.configs = fopen(optarg, "r")) ){
+        //     perror(ERR_FOPEN_INPUT);
+        //     exit(EXIT_FAILURE);
+        //     /* NOTREACHED */
+        //   }
+        //break
+      
       case 'p':
         options.port = (uint32_t )strtoul(optarg, NULL, 16);
+        /* todo: validate the input port number XXX */
         break;
       
       case 'i':
         options.remote_ip = optarg;
+        /* todo: validate the input ip number XXX */
         break;
       
       case 't':
         options.period = (uint32_t )strtoul(optarg, NULL, 16);
+        /* todo: validate the input period XXX */
         break;
       
       case 'f':
         options.file_size = (uint32_t )strtoul(optarg, NULL, 16);
+        /* todo: validate the input file size XXX */
         break;
-
-      // case 'i':
-      //   if (!(options.input = fopen(optarg, "r")) ){
-      //     perror(ERR_FOPEN_INPUT);
-      //     exit(EXIT_FAILURE);
-      //     /* NOTREACHED */
-      //   }
-      //   break;
-
-      // case 'o':
-      //   if (!(options.output = fopen(optarg, "w")) ){
-      //     perror(ERR_FOPEN_OUTPUT);
-      //     exit(EXIT_FAILURE);
-      //     /* NOTREACHED */
-      //   }    
-      //   break;
-              
-      // case 'f':
-      //   options.flags = (uint32_t )strtoul(optarg, NULL, 16);
-      //   break;
 
       case 'v':
         options.verbose += 1;
