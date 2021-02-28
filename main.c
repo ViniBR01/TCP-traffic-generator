@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
       /* CALL THE FUNCTIONS RELATED TO CLIENT EXECUTION XXX */
       printf("Entering client mode operation.\n");
 
-      if (client() != EXIT_SUCCESS) {
+      if (client(&options) != EXIT_SUCCESS) {
         perror(ERR_CLIENT);
         exit(EXIT_FAILURE);
         /* NOTREACHED */
