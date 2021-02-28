@@ -28,10 +28,10 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 
 /* 2 defines */
 //colon mandates an argument in OPTSTR; W is reserved for long options
-#define OPTSTR "vi:o:f:h"
+#define OPTSTR "vp:i:t:f:h"
 #define USAGE_FMT  "%s [-v] [-f hexflag] [-i inputfile] [-o outputfile] [-h]\n"
-#define ERR_FOPEN_INPUT  "fopen(input, r)"
-#define ERR_FOPEN_OUTPUT "fopen(output, w)"
+//#define ERR_FOPEN_INPUT  "fopen(input, r)"
+//#define ERR_FOPEN_OUTPUT "fopen(output, w)"
 #define ERR_CLIENT "client function blew up"
 #define ERR_SERVER "server function blew up"
 #define DEFAULT_PROGNAME "start_server"
@@ -65,41 +65,57 @@ int main(int argc, char *argv[]) {
   }
 
   int opt;
-  options_t options = { 0, 0x0, stdin, stdout }; //default values
+  options_t options = { 0, 0x0, 8080, "", 1000, 10 }; //default values
 
   opterr = 0; //disables getopt from emmiting a ?
 
   while ((opt = getopt(argc, argv, OPTSTR)) != EOF) {
     switch(opt) {
-    case 'i':
-      if (!(options.input = fopen(optarg, "r")) ){
-        perror(ERR_FOPEN_INPUT);
-        exit(EXIT_FAILURE);
+      case 'p':
+        options.port = (uint32_t )strtoul(optarg, NULL, 16);
+        break;
+      
+      case 'i':
+        options.ip = optarg;
+        break;
+      
+      case 't':
+        options.period = (uint32_t )strtoul(optarg, NULL, 16);
+        break;
+      
+      case 'f':
+        options.file_size = (uint32_t )strtoul(optarg, NULL, 16);
+        break;
+
+      // case 'i':
+      //   if (!(options.input = fopen(optarg, "r")) ){
+      //     perror(ERR_FOPEN_INPUT);
+      //     exit(EXIT_FAILURE);
+      //     /* NOTREACHED */
+      //   }
+      //   break;
+
+      // case 'o':
+      //   if (!(options.output = fopen(optarg, "w")) ){
+      //     perror(ERR_FOPEN_OUTPUT);
+      //     exit(EXIT_FAILURE);
+      //     /* NOTREACHED */
+      //   }    
+      //   break;
+              
+      // case 'f':
+      //   options.flags = (uint32_t )strtoul(optarg, NULL, 16);
+      //   break;
+
+      case 'v':
+        options.verbose += 1;
+        break;
+
+      case 'h':
+      default:
+        usage(basename(argv[0]), opt);
         /* NOTREACHED */
-      }
-      break;
-
-    case 'o':
-      if (!(options.output = fopen(optarg, "w")) ){
-        perror(ERR_FOPEN_OUTPUT);
-        exit(EXIT_FAILURE);
-        /* NOTREACHED */
-      }    
-      break;
-             
-    case 'f':
-      options.flags = (uint32_t )strtoul(optarg, NULL, 16);
-      break;
-
-    case 'v':
-      options.verbose += 1;
-      break;
-
-    case 'h':
-    default:
-      usage(basename(argv[0]), opt);
-      /* NOTREACHED */
-      break;
+        break;
     }
   }
 
