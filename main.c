@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
       /* CALL THE FUNCTIONS RELATED TO SERVER EXECUTION XXX */
       printf("Entering server mode operation.\n");
 
-      if (server() != EXIT_SUCCESS) {
+      if (server(&options) != EXIT_SUCCESS) {
         perror(ERR_SERVER);
         exit(EXIT_FAILURE);
         /* NOTREACHED */
@@ -171,21 +171,4 @@ int pick_operation(char *argv0)
     return TCP_OP_CLIENT;  
   
   return TCP_OP_INVALID;
-}
-
-int do_the_needful(options_t *options) {
-
-  if (!options) {
-    errno = EINVAL;
-    return EXIT_FAILURE;
-  }
-
-  if (!options->input || !options->output) {
-    errno = ENOENT;
-    return EXIT_FAILURE;
-  }
-
-  /* XXX do needful stuff */
-
-  return EXIT_SUCCESS;
 }
