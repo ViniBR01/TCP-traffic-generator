@@ -23,6 +23,7 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 
 /* 1.2 project includes */
 #include "main.h"
+#include "client.h"
 
 /* 2 defines */
 //colon mandates an argument in OPTSTR; W is reserved for long options
@@ -30,7 +31,8 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 #define USAGE_FMT  "%s [-v] [-f hexflag] [-i inputfile] [-o outputfile] [-h]\n"
 #define ERR_FOPEN_INPUT  "fopen(input, r)"
 #define ERR_FOPEN_OUTPUT "fopen(output, w)"
-#define ERR_DO_THE_NEEDFUL "do_the_needful blew up"
+#define ERR_CLIENT "client function blew up"
+#define ERR_SERVER "server function blew up"
 #define DEFAULT_PROGNAME "start_server"
 #define TCP_OP_INVALID 0
 #define TCP_OP_SERVER 1
@@ -103,27 +105,26 @@ int main(int argc, char *argv[]) {
   switch(tcp_op) {
     case TCP_OP_CLIENT:
       /* CALL THE FUNCTIONS RELATED TO CLIENT EXECUTION XXX */
-      printf("Entering client mode operation./n");
+      printf("Entering client mode operation.\n");
+
+      if (client() != EXIT_SUCCESS) {
+        perror(ERR_CLIENT);
+        exit(EXIT_FAILURE);
+        /* NOTREACHED */
+      }
+
       break;
     
     case TCP_OP_SERVER:
       /* CALL THE FUNCTIONS RELATED TO SERVER EXECUTION XXX */
-      printf("Entering server mode operation./n");
+      printf("Entering server mode operation.\n");
       break;
     
     default:
       errno = EINVAL;
-      fprintf(stderr, "Impossible mode: %s tcp_op=%d/n", argv[0], tcp_op);
+      fprintf(stderr, "Impossible mode: %s tcp_op=%d\n", argv[0], tcp_op);
       break;
   }
-
-/* example of how to call a function safely from the main function
-  if (do_the_needful(&options) != EXIT_SUCCESS) {
-    perror(ERR_DO_THE_NEEDFUL);
-    exit(EXIT_FAILURE);
-    /* NOTREACHED *//*
-  }
-*/
 
   return EXIT_SUCCESS;
 }

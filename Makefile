@@ -11,8 +11,6 @@ HDR= $(SRC:.c=.h)
 CC= gcc
 CFLAGS= -I.
 
-.PHONY: clean
-
 all: $(TARGETS)
 
 $(SERVER): $(OBJ)
@@ -23,6 +21,8 @@ $(SERVER): $(OBJ)
 
 $(CLIENT): $(SERVER)
 	ln -f $< $@
+
+.PHONY: clean
 
 clean:
 	rm -f $(OBJ) *~ 
