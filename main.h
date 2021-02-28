@@ -8,9 +8,12 @@
 
 typedef struct {
   int           verbose;
-  uint32_t      flags;
-  FILE         *input;
-  FILE         *output;
+  //uint32_t      flags;
+  //FILE       *configs;
+  uint32_t      port;
+  char         *ip;
+  uint32_t      period;
+  uint32_t      file_size;
 } options_t;
 
 #endif	/* _MAIN_H */
