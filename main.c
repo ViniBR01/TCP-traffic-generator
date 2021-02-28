@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
         break;
       
       case 'i':
-        options.ip = optarg;
+        options.remote_ip = optarg;
         break;
       
       case 't':
