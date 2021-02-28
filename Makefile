@@ -19,7 +19,7 @@ $(SERVER): $(OBJ)
 	$(CC) -o $@ $(OBJ) $(CFLAGS)
 
 .c.o: $(HDR)
-	$(CC) -o $@ $(OBJ) $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(CLIENT): $(SERVER)
 	ln -f $< $@
