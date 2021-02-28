@@ -4,7 +4,11 @@
 #define _CLIENT_H
 
 //#include <stdio.h>
+//#include <stdlib.h>
+#include <stdint.h>
 
-int client();
+#include "main.h"
+
+int client(options_t *options);
 
 #endif  /* _CLIENT_H */
