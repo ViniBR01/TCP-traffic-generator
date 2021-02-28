@@ -7,4 +7,4 @@
 
 int client();
 
-#endif
+#endif  /* _CLIENT_H */
