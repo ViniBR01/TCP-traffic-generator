@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
   }
 
   int opt;
-  options_t options = { 0, 0x0, 8080, "", 1000, 10 }; //default values
+  options_t options = { 0, 8080, "", 1000, 10 }; //default values
 
   opterr = 0; //disables getopt from emmiting a ?
 
