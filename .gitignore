@@ -53,5 +53,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# Emacs temp files
+# Emacs and VSCode
 *~
+.vscode
