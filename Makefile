@@ -4,7 +4,7 @@ CLIENT= start-client
 
 TARGETS= $(SERVER) $(CLIENT)
 
-SRC= main.c
+SRC= main.c client.c server.c
 OBJ= $(SRC:.c=.o)
 HDR= $(SRC:.c=.h)
 

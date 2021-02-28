@@ -24,6 +24,7 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 /* 1.2 project includes */
 #include "main.h"
 #include "client.h"
+#include "server.h"
 
 /* 2 defines */
 //colon mandates an argument in OPTSTR; W is reserved for long options
@@ -47,7 +48,7 @@ extern int opterr, optind;
 
 /* 5 global variable declarations */
 
-/* 6 function prototypes */
+/* 6 ancillary function prototypes */
 void usage(char *progname, int opt);
 int pick_operation(char *);
 int do_the_needful(options_t *options);
@@ -118,6 +119,13 @@ int main(int argc, char *argv[]) {
     case TCP_OP_SERVER:
       /* CALL THE FUNCTIONS RELATED TO SERVER EXECUTION XXX */
       printf("Entering server mode operation.\n");
+
+      if (server() != EXIT_SUCCESS) {
+        perror(ERR_SERVER);
+        exit(EXIT_FAILURE);
+        /* NOTREACHED */
+      }
+
       break;
     
     default:
@@ -129,7 +137,7 @@ int main(int argc, char *argv[]) {
   return EXIT_SUCCESS;
 }
 
-/* 8 function declarations */
+/* 8 ancillary function declarations */
 void usage(char *progname, int opt) {
   if (!progname) {
     errno = EINVAL;
