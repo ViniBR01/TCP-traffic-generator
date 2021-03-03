@@ -6,17 +6,18 @@ TARGETS= $(SERVER) $(CLIENT)
 
 SRC= main.c client.c server.c
 OBJ= $(SRC:.c=.o)
-HDR= $(SRC:.c=.h)
+DEPS= $(SRC:.c=.h)
 
+VPATH= .:cli_parser:client_core:server_core:output:utils
 CC= gcc
-CFLAGS= -I.
+CFLAGS= -I. -I./cli_parser -I./client_core -I./server_core -I./output -I./utils
 
 all: $(TARGETS)
 
 $(SERVER): $(OBJ)
 	$(CC) -o $@ $(OBJ) $(CFLAGS)
 
-.c.o: $(HDR)
+.c.o: $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(CLIENT): $(SERVER)
