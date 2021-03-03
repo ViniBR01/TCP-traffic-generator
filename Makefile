@@ -12,7 +12,7 @@ VPATH= .:cli_parser:client_core:server_core:output:utils
 ODIR= obj
 CFLAGS= -I. -I./cli_parser -I./client_core -I./server_core -I./output -I./utils
 
-SRC= main.c client.c server.c
+SRC= main.c client.c server.c scheduler.c
 _OBJ= $(SRC:.c=.o)
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 DEPS= $(SRC:.c=.h)
