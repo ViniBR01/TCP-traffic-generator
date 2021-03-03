@@ -14,42 +14,22 @@
 #include <sys/wait.h>
 
 #include "server.h"
+#include "scheduler.h"
 
 #define LENGTH 1024 //buffer
 #define PORT 8081
-#define STATE_READY 1
-#define STATE_WAITING 2
-#define STATE_INACTIVE 3
-#define N_MAX_TASKS 10
 #define PORT 8081
 #define LENGTH 1024
 
-typedef struct TCBstruct {
-  void (*ftpr)(void *p);		//the function pointer
-  void *arg_ptr;			//the argument pointer
-  unsigned short int state;	//the task state
-  unsigned int delay;		//sleep delay in microseconds
-  struct timeval delay_ref;	//reference time when delay started
-} tcb;
-
 /* Do not use globals XXX */
-int task_index = 0;
-int new_socket;
-tcb TaskList[N_MAX_TASKS];
 int period;
 int fsize;
 int portn;
-void (*readytasks[N_MAX_TASKS]) ();
-void (*haltedtasks[N_MAX_TASKS]) ();
-void (*sleepingtasks[N_MAX_TASKS]) ();
+int new_socket;
 
-void scheduler();
 void taskA(void *p);
 void taskB(void *p);
 void taskC(void *p);
-void halt_me();
-void start_task(void (*functionPTR)() );
-void delay(int usec);
 
 int server(options_t *options) {
 
@@ -151,30 +131,6 @@ int server(options_t *options) {
     return EXIT_SUCCESS;
 }
 
-void scheduler(){
-  //printf("Start function scheduler(); task_index = %d\n", task_index);
-  if(TaskList[task_index].ftpr == NULL && task_index != 0) task_index = 0;
-  //if(TaskList[task_index].ftpr == NULL && task_index == 0) {
-  //	printf("No tasks exist.\n");/*No tasks!*/
-  if(TaskList[task_index].state == STATE_READY) {
-    printf("Function scheduler(); task_index = %d; State_ready\n", task_index);
-    start_task(TaskList[task_index].ftpr);
-  }else if(TaskList[task_index].state == STATE_WAITING) {
-    //printf("Function scheduler(); task_index = %d; State_waiting\n", task_index);
-    struct timeval currentTime;
-    struct timeval elapsedTime;
-    gettimeofday(&currentTime, NULL);
-    timersub(&currentTime, &TaskList[task_index].delay_ref, &elapsedTime);
-    unsigned long time_in_micros = 1000000*elapsedTime.tv_sec + elapsedTime.tv_usec;
-    if ((unsigned long)TaskList[task_index].delay <= time_in_micros) {
-      TaskList[task_index].state = STATE_READY;
-      TaskList[task_index].delay = -1;
-    }
-  }
-  task_index++;
-  return;
-}
-
 void taskA(void *p){
   printf("This is the beggining of task A.\n");
   //Call taskC with parameter = 1:
@@ -265,20 +221,4 @@ void taskC(void *p){
 	
   printf("This is the end of task C.\n\n");
   halt_me();
-}
-
-void start_task(void (*functionPTR)() ){
-  functionPTR();
-}
-
-void halt_me(){
-  //Deactivates one task - the current one
-  TaskList[task_index].state = STATE_INACTIVE;
-}
-
-void delay(int usec){
-  //Sets a delay value for tasks in microsecs
-  TaskList[task_index].state = STATE_WAITING;
-  TaskList[task_index].delay = usec;
-  gettimeofday(&TaskList[task_index].delay_ref, NULL);
 }
