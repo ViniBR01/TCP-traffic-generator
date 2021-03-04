@@ -17,9 +17,9 @@
 
 int task_index = 0;
 tcb TaskList[N_MAX_TASKS];
-void (*readytasks[N_MAX_TASKS]) ();
-void (*haltedtasks[N_MAX_TASKS]) ();
-void (*sleepingtasks[N_MAX_TASKS]) ();
+// void (*readytasks[N_MAX_TASKS]) ();
+// void (*haltedtasks[N_MAX_TASKS]) ();
+// void (*sleepingtasks[N_MAX_TASKS]) ();
 
 void scheduler(){
   if(TaskList[task_index].ftpr == NULL && task_index != 0) {
