@@ -15,5 +15,14 @@ typedef struct {
 
 flow_t* create_flow(int model_type);
 int get_next_file();
+//More operations will be defined based on the design of the main scheduler
 
 #endif  /* _TRAFFIC_FACTORY_H */
+
+/*
+XXX - first implement a single concrete traffic model only.
+Later, use the factory design pattern to make it flexible
+with more traffic models.
+
+reference: https://stackoverflow.com/questions/3204511/factory-pattern-implementation-using-ansi-c
+*/
