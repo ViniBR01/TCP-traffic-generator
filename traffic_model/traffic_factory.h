@@ -1,1 +1,1 @@
-/* traffic_factory.c - TCP traffic generator */
+/* traffic_factory.h - TCP traffic generator */
