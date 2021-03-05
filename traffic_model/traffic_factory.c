@@ -1,1 +1,0 @@
-/* traffic_factory.c - TCP traffic generator */
