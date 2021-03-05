@@ -3,7 +3,7 @@
 #ifndef _TRAFFIC_FACTORY_H
 #define _TRAFFIC_FACTORY_H
 
-#include <stdint.h>
+#include <stdio.h>
 
 #define FIXED_PERIODIC 0
 //#define POISSON_ARRIVALS 1 //and so on...
