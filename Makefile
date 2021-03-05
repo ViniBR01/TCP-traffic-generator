@@ -8,11 +8,11 @@ CLIENT= start-client
 
 TARGETS= $(SERVER) $(CLIENT)
 
-VPATH= .:cli_parser:client_core:server_core:output:utils
+VPATH= .:core:input:output:traffic_model:utils
 ODIR= obj
-CFLAGS= -I. -I./cli_parser -I./client_core -I./server_core -I./output -I./utils
+CFLAGS= -I. -I./input -I./core -I./output -I./traffic_model -I./utils
 
-SRC= main.c client.c server.c scheduler.c
+SRC= main.c client.c server.c scheduler.c traffic_factory.c
 _OBJ= $(SRC:.c=.o)
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 DEPS= $(SRC:.c=.h)
