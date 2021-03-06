@@ -17,9 +17,25 @@
 
 int task_index = 0;
 tcb TaskList[N_MAX_TASKS];
+int creating_index = 0;
 // void (*readytasks[N_MAX_TASKS]) ();
 // void (*haltedtasks[N_MAX_TASKS]) ();
 // void (*sleepingtasks[N_MAX_TASKS]) ();
+
+int create_task(void (*function_ptr)(void *p), void *argument_ptr, unsigned short int state, unsigned int delay) {
+  int j = creating_index;
+  TaskList[j].ftpr = function_ptr;
+  TaskList[j].arg_ptr = (void *) argument_ptr;
+  TaskList[j].state = state;
+  TaskList[j].delay = delay;
+
+  creating_index++;
+  TaskList[creating_index].ftpr = NULL;
+}
+
+void start_task(void (*functionPTR)(void *) , void* param_ptr){
+  functionPTR(param_ptr);
+}
 
 void scheduler(){
   if(TaskList[task_index].ftpr == NULL && task_index != 0) {
@@ -28,10 +44,10 @@ void scheduler(){
   //if(TaskList[task_index].ftpr == NULL && task_index == 0) {
   //	printf("No tasks exist.\n");/*No tasks!*/
   if(TaskList[task_index].state == STATE_READY) {
-    printf("Function scheduler(); task_index = %d; State_ready\n", task_index);
+  //  printf("Function scheduler(); task_index = %d; State_ready\n", task_index);
     start_task(TaskList[task_index].ftpr, TaskList[task_index].arg_ptr);
   }else if(TaskList[task_index].state == STATE_WAITING) {
-    //printf("Function scheduler(); task_index = %d; State_waiting\n", task_index);
+  //  printf("Function scheduler(); task_index = %d; State_waiting\n", task_index);
     struct timeval currentTime;
     struct timeval elapsedTime;
     gettimeofday(&currentTime, NULL);
@@ -44,10 +60,6 @@ void scheduler(){
   }
   task_index++;
   return;
-}
-
-void start_task(void (*functionPTR)(void *) , void* param_ptr){
-  functionPTR(param_ptr);
 }
 
 void halt_me(){

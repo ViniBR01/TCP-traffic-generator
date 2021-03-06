@@ -22,9 +22,9 @@ typedef struct TCBstruct {
 extern tcb TaskList[N_MAX_TASKS];
 extern int task_index;
 
+int create_task(void (*function_ptr)(void *p), void *argument_ptr, unsigned short int state, unsigned int delay);
 void scheduler();
 void halt_me();
-void start_task(void (*functionPTR)(void *) , void *p);
 void delay(unsigned int usec);
 
 #endif  /* _SERVER_H */
