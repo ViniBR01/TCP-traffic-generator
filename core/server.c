@@ -14,6 +14,7 @@
 #include <sys/wait.h>
 
 #include "server.h"
+#include "traffic_factory.h"
 #include "scheduler.h"
 
 #define LENGTH 1024 //buffer
@@ -40,10 +41,28 @@ int server(options_t *options) {
   }
 
   /* XXX do server stuff */
-  //Read arguments from argv[]
+  //Read arguments from options
   period = options->period;
   fsize = options->file_size;
   portn = options->port;
+
+  //start all traffic model instances
+  // A traffic generator is resposible to create files for transmissions
+  //They provede interface to create a traffic generation task. This task
+  //creates files with a specified size in kB and at specified time.
+  //1 - fixed periodic:
+  // traffic_factory_ops traffic_factory = get_traffic_factory(FIXED_PERIODIC);
+  // ctx_t *traffic_generator = traffic_factory->create(period, fsize, portn);
+  //eventually, do: traffic_factory->destroy(&traffic_generator);
+
+  //create tasks out of 
+
+
+
+
+
+
+
   
   /*Initialize tasks*/////////////////////////////////////////////////////////////////////////////////
   int j = 0;
@@ -116,6 +135,17 @@ int server(options_t *options) {
   valread = read(new_socket, buffer, 1024);
   printf("%s\n", buffer);
   
+
+
+
+
+
+
+
+
+
+
+
   //Now start scheduler
   while(1) {
     scheduler();
