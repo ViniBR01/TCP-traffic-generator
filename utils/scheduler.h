@@ -4,6 +4,7 @@
 #define _SCHEDULER_H
 
 #include <time.h>
+#include <sys/time.h>
 
 #define STATE_READY 1
 #define STATE_WAITING 2
@@ -23,7 +24,7 @@ extern int task_index;
 
 void scheduler();
 void halt_me();
-void start_task(void (*functionPTR)() );
-void delay(int usec);
+void start_task(void (*functionPTR)(void *) , void *p);
+void delay(unsigned int usec);
 
 #endif  /* _SERVER_H */

@@ -29,7 +29,7 @@ void scheduler(){
   //	printf("No tasks exist.\n");/*No tasks!*/
   if(TaskList[task_index].state == STATE_READY) {
     printf("Function scheduler(); task_index = %d; State_ready\n", task_index);
-    start_task(TaskList[task_index].ftpr);
+    start_task(TaskList[task_index].ftpr, TaskList[task_index].arg_ptr);
   }else if(TaskList[task_index].state == STATE_WAITING) {
     //printf("Function scheduler(); task_index = %d; State_waiting\n", task_index);
     struct timeval currentTime;
@@ -46,8 +46,8 @@ void scheduler(){
   return;
 }
 
-void start_task(void (*functionPTR)() ){
-  functionPTR();
+void start_task(void (*functionPTR)(void *) , void* param_ptr){
+  functionPTR(param_ptr);
 }
 
 void halt_me(){
@@ -55,7 +55,7 @@ void halt_me(){
   TaskList[task_index].state = STATE_INACTIVE;
 }
 
-void delay(int usec){
+void delay(unsigned int usec){
   //Sets a delay value for tasks in microsecs
   TaskList[task_index].state = STATE_WAITING;
   TaskList[task_index].delay = usec;
