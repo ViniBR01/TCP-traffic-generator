@@ -5,31 +5,11 @@
 
 #include "scheduler.h"
 
-void periodic_task(void *p);
+void periodic_task(void *p, unsigned int task_id);
 
 int main() {
     printf("Starting test: task scheduler.\n");
-    /* Test concurrency in tasks that use the same fuction
-
-    //Should be able to create a simple periodic task and run the scheduler
-    int j = 0;
-    TaskList[j].ftpr = periodic_task;
-    unsigned int *task_parameter = (unsigned int *) malloc(sizeof(unsigned int));
-    *task_parameter = 1000000;
-    TaskList[j].arg_ptr = (void *) task_parameter;
-    TaskList[j].state = STATE_READY;
-    TaskList[j].delay = -1;
-
-    j++;
-    TaskList[j].ftpr = periodic_task;
-    unsigned int *task_parameter2 = (unsigned int *) malloc(sizeof(unsigned int));
-    *task_parameter2 = 3000000;
-    TaskList[j].arg_ptr = (void *) task_parameter2;
-    TaskList[j].state = STATE_READY;
-    TaskList[j].delay = -1;
-
-    j++;
-    TaskList[j].ftpr = NULL; */
+    /* Test concurrency in tasks that use the same fuction */
 
     unsigned int *task_parameter1 = (unsigned int *) malloc(sizeof(unsigned int));
     *task_parameter1 = 1000000;
@@ -42,7 +22,6 @@ int main() {
     
 
     //Now start scheduler
-    task_index = 0;
     while(1) {
         scheduler();
     }
@@ -50,10 +29,10 @@ int main() {
     return 0;
 }
 
-void periodic_task(void *p) {
-    printf("Executing the periodic task with id: %d.\n", task_index);
+void periodic_task(void *p, unsigned int task_id) {
+    printf("Executing the periodic task with id: %d.\n", task_id);
     printf("%d\n", *(unsigned int *)p);
     // printf("pointer address: %p\n\n", *(unsigned int *)p);
-    delay(*(unsigned int *)p);
+    delay(*(unsigned int *)p, task_id);
     return;
 }
