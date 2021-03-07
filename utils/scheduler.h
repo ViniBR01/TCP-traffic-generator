@@ -15,7 +15,7 @@ unsigned int create_task(void (*function_ptr)(void *p, unsigned int task_id),
 int kill_task(unsigned int task_id);
 void scheduler();
 void halt_me(unsigned int task_id);
-void delay(unsigned int usec, unsigned int task_id);
+void delay(unsigned int new_delay, unsigned int task_id); //delay in usec
 int get_scheduler_time();
 
 #endif  /* _SERVER_H */
