@@ -15,56 +15,134 @@
 
 #include "scheduler.h"
 
-#define N_MAX_TASKS 10
+#define MIN_TCB_SIZE 10
+
+typedef struct TASKstruct {
+  unsigned int task_id;
+  void (*function_ptr)(void *p, unsigned int task_id);
+  void *arg_ptr;
+  unsigned short int state;
+  unsigned int delay;
+  struct timeval delay_ref;	  //reference time when delay started
+} task_t;
 
 typedef struct TCBstruct {
-  void (*ftpr)(void *p, unsigned int task_id);    //the function pointer
-  void *arg_ptr;			//the argument pointer
-  unsigned short int state;	//the task state
-  unsigned int delay;		//sleep delay in microseconds
-  struct timeval delay_ref;	//reference time when delay started
-} tcb;
+  task_t *task_list;
+  int capacity;
+  int count;
+} tcb_t;
 
-tcb TaskList[N_MAX_TASKS];
-unsigned int task_index = 0;
+// unsigned int task_index = 0;
 unsigned int creating_id = 0;
-// void (*readytasks[N_MAX_TASKS]) ();
-// void (*haltedtasks[N_MAX_TASKS]) ();
-// void (*sleepingtasks[N_MAX_TASKS]) ();
+tcb_t ready_tasks;
+tcb_t halted_tasks;
+tcb_t sleeping_tasks;
 
-unsigned int create_task( \
-    void (*function_ptr)(void *p, unsigned int task_id), \
-    void *argument_ptr, unsigned short int state, unsigned int delay) {
+/* In order to store the tasks we need a data structure. As a design choice, 
+we will use three copies of this DS to store active, sleeping and halted tasks.
+  This DS must provide the following functionalities:
+  -Add new task with a give id number
+  -Delete a task given an id number
+  -Check if a given id number is present
+  -Return a task with a give id number, if it exists
+  -Allow arbitrary number of tasks
+  -Efficient iteration of all tasks in the DS
+  -It must be independent of the actual values of the id numbers (they are only unique)
+
+Ideally, we would like to have a hashtable for best bigO time performance.
+However, for a simpler implementation in C, we will use simple arrays.
+*/
+
+int add_task(unsigned int new_task_id,
+              void (*new_function_ptr)(void *p, unsigned int task_id),
+              void *new_arg_ptr, unsigned short int new_state, 
+              unsigned int new_delay, tcb_t task_block) {
+  if (task_block.task_list == NULL) {
+    task_block.task_list = (task_t *) malloc(MIN_TCB_SIZE * sizeof(task_t));
+    task_block.capacity = MIN_TCB_SIZE;
+    task_block.count = 0;
+  } else if (task_block.count == task_block.capacity) {
+    increase_task_block(task_block); // XXX write this fuction later
+  }
+
+  /* Here we guarantee that the task block is allocated and has free space */
+  int new_index = task_block.count;
+  task_block.task_list[new_index].task_id = new_task_id;
+  task_block.task_list[new_index].function_ptr = new_function_ptr;
+  task_block.task_list[new_index].arg_ptr = new_arg_ptr;
+  task_block.task_list[new_index].state = new_state;
+  task_block.task_list[new_index].delay = new_delay;
+  gettimeofday(&(task_block.task_list[new_index].delay_ref), NULL);
+  task_block.count += 1;
+}
+
+task_t * get_task(unsigned int task_id, tcb_t task_block) {
+  if (task_block.task_list == NULL) {
+    return NULL;
+  }
+
+  for(int i=0; i<task_block.count; i++) {
+    if(task_block.task_list[i].task_id == task_id) {
+      return task_block.task_list+i;
+    }
+  }
+
+  return NULL;
+}
+
+int delete_task(unsigned int delete_id, tcb_t task_block) {
+  /* This function assumes a task is present in the given task block */
+
+  int delete_index = 0;
+  while(task_block.task_list[delete_index].task_id != delete_id) {
+    delete_id += 1;
+  }
+
+  for(int i=delete_task; i<task_block.count-1; i++) {
+    task_block.task_list[i].task_id = task_block.task_list[i+1].task_id;
+    task_block.task_list[i].function_ptr = task_block.task_list[i+1].function_ptr;
+    task_block.task_list[i].arg_ptr = task_block.task_list[i+1].arg_ptr;
+    task_block.task_list[i].state = task_block.task_list[i+1].state;
+    task_block.task_list[i].delay = task_block.task_list[i+1].delay;
+    task_block.task_list[i].delay_ref = task_block.task_list[i+1].delay_ref;
+  }
+
+  task_block.count -= 1;
+}
+/* end of task block control Data Structure definition */
+
+static void start_task(void (*function_ptr)(void *, unsigned int) , void* param_ptr, unsigned int task_id){
+  function_ptr(param_ptr, task_id);
+}
+
+unsigned int create_task( void (*function_ptr)(void *p, unsigned int task_id), \
+                          void *argument_ptr, unsigned short int state, unsigned int delay) {
   unsigned int j = creating_id;
-  TaskList[j].ftpr = function_ptr;
+  TaskList[j].function_ptr = function_ptr;
   TaskList[j].arg_ptr = (void *) argument_ptr;
   TaskList[j].state = state;
   TaskList[j].delay = delay;
 
   creating_id++;
-  TaskList[creating_id].ftpr = NULL;
-}
-
-static void start_task(void (*functionPTR)(void *, unsigned int) , void* param_ptr, unsigned int task_id){
-  functionPTR(param_ptr, task_id);
+  TaskList[creating_id].function_ptr = NULL;
 }
 
 void scheduler(){
-  if(TaskList[task_index].ftpr == NULL && task_index != 0) {
+  if(TaskList[task_index].function_ptr == NULL && task_index != 0) {
     task_index = 0;
   }
   //if(TaskList[task_index].ftpr == NULL && task_index == 0) {
   //	printf("No tasks exist.\n");/*No tasks!*/
   if(TaskList[task_index].state == STATE_READY) {
-  //  printf("Function scheduler(); task_index = %d; State_ready\n", task_index);
-    start_task(TaskList[task_index].ftpr, TaskList[task_index].arg_ptr, task_index);
+    start_task(TaskList[task_index].function_ptr, TaskList[task_index].arg_ptr, task_index);
   }else if(TaskList[task_index].state == STATE_WAITING) {
-  //  printf("Function scheduler(); task_index = %d; State_waiting\n", task_index);
     struct timeval currentTime;
     struct timeval elapsedTime;
     gettimeofday(&currentTime, NULL);
+
     timersub(&currentTime, &TaskList[task_index].delay_ref, &elapsedTime);
     unsigned long time_in_micros = 1000000*elapsedTime.tv_sec + elapsedTime.tv_usec;
+
     if ((unsigned long)TaskList[task_index].delay <= time_in_micros) {
       TaskList[task_index].state = STATE_READY;
       TaskList[task_index].delay = -1;
