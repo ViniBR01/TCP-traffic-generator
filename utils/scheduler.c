@@ -16,6 +16,8 @@
 #include "scheduler.h"
 
 #define MIN_TCB_SIZE 10
+#define ERR_INVALID_STATE "The task state was invalid"
+#define NOT_ITERATING -1
 
 typedef struct TASKstruct {
   unsigned int task_id;
@@ -30,6 +32,7 @@ typedef struct TCBstruct {
   task_t *task_list;
   int capacity;
   int count;
+  int iterator;
 } tcb_t;
 
 // unsigned int task_index = 0;
@@ -61,6 +64,7 @@ int add_task(unsigned int new_task_id,
     task_block.task_list = (task_t *) malloc(MIN_TCB_SIZE * sizeof(task_t));
     task_block.capacity = MIN_TCB_SIZE;
     task_block.count = 0;
+    task_block.iterator = NOT_ITERATING;
   } else if (task_block.count == task_block.capacity) {
     increase_task_block(task_block); // XXX write this fuction later
   }
@@ -108,8 +112,32 @@ int delete_task(unsigned int delete_id, tcb_t task_block) {
   }
 
   task_block.count -= 1;
+  
+  if (task_block.iterator > delete_id) {
+    task_block.iterator -= 1;
+  } else if (task_block.iterator == task_block.count) {
+    task_block.iterator = NOT_ITERATING;
+  }
 }
-/* end of task block control Data Structure definition */
+
+int start_iterator(tcb_t task_block) {
+  if (task_block.task_list != NULL) {
+    task_block.iterator = 0;
+  } else {
+    task_block.iterator = NOT_ITERATING;
+  }
+  return task_block.iterator;
+}
+
+int advance_iterator(tcb_t task_block) {
+  if (task_block.task_list != NULL && task_block.iterator < task_block.count-1) {
+    task_block.iterator += 1;
+  } else {
+    task_block.iterator = NOT_ITERATING;
+  }
+  return task_block.iterator;
+}
+/* end of the task block control Data Structure definition */
 
 static void start_task(void (*function_ptr)(void *, unsigned int) , void* param_ptr, unsigned int task_id){
   function_ptr(param_ptr, task_id);
@@ -117,17 +145,57 @@ static void start_task(void (*function_ptr)(void *, unsigned int) , void* param_
 
 unsigned int create_task( void (*function_ptr)(void *p, unsigned int task_id), \
                           void *argument_ptr, unsigned short int state, unsigned int delay) {
-  unsigned int j = creating_id;
-  TaskList[j].function_ptr = function_ptr;
-  TaskList[j].arg_ptr = (void *) argument_ptr;
-  TaskList[j].state = state;
-  TaskList[j].delay = delay;
+  int task_id = creating_id;
+  creating_id += 1;
+  switch(state) {
+    case STATE_READY:
+    add_task(task_id, function_ptr, argument_ptr, state, delay, ready_tasks);
+    break;
 
-  creating_id++;
-  TaskList[creating_id].function_ptr = NULL;
+    case STATE_WAITING:
+    add_task(task_id, function_ptr, argument_ptr, state, delay, sleeping_tasks);
+    break;
+
+    case STATE_INACTIVE:
+    add_task(task_id, function_ptr, argument_ptr, state, delay, halted_tasks);
+    break;
+
+    default:
+    perror(ERR_INVALID_STATE);
+    exit(EXIT_FAILURE);
+    /* NOTREACHED */
+  }
 }
 
 void scheduler(){
+  /* Check on all sleeping tasks and move them to ready task if delay is up */
+
+  //CARE: the 3 tcb DS may change during the loop execution!!!
+
+  if(sleeping_tasks.task_list != NULL) {
+    int i = start_iterator(sleeping_tasks);
+    while(i != NOT_ITERATING) {
+      //Here we know that a task exists at position i of sleeping tasks
+      //check if the timer is up
+      //if yes, move it to ready tasks
+      //if not, dont do anything
+      i = advance_iterator(sleeping_tasks);
+    }
+  }
+
+  /* Iterate through all ready tasks and execute them */
+  if(ready_tasks.task_list != NULL) {
+    for(int i=0; i<ready_tasks.count; i++) {
+
+    }
+  }
+
+
+
+
+
+
+
   if(TaskList[task_index].function_ptr == NULL && task_index != 0) {
     task_index = 0;
   }
@@ -153,13 +221,45 @@ void scheduler(){
 }
 
 void halt_me(unsigned int task_id){
-  //Deactivates one task - the current one
-  TaskList[task_id].state = STATE_INACTIVE;
+  /* Deactivates one task indicated by task_id */
+
+  task_t *task = get_task(task_id, ready_tasks);
+  if((task) != NULL) {
+    add_task(task_id, task->function_ptr, task->arg_ptr, task->state, task->delay, halted_tasks);
+    delete_task(task_id, ready_tasks);
+    return;
+  }
+
+  task = get_task(task_id, sleeping_tasks);
+  if((task) != NULL) {
+    add_task(task_id, task->function_ptr, task->arg_ptr, task->state, task->delay, halted_tasks);
+    delete_task(task_id, sleeping_tasks);
+    return;
+  }
 }
 
-void delay(unsigned int usec, unsigned int task_id){
-  //Sets a delay value for tasks in microsecs
-  TaskList[task_id].state = STATE_WAITING;
-  TaskList[task_id].delay = usec;
-  gettimeofday(&TaskList[task_id].delay_ref, NULL);
+void delay(unsigned int new_delay, unsigned int task_id){
+  /* Updates the delay value and delay ref of one task indicated by task_id.
+     If the task was not in the sleeping list, move it there. */
+
+  task_t *task = get_task(task_id, ready_tasks);
+  if((task) != NULL) {
+    add_task(task_id, task->function_ptr, task->arg_ptr, task->state, new_delay, sleeping_tasks);
+    delete_task(task_id, ready_tasks);
+    return;
+  }
+
+  task = get_task(task_id, halted_tasks);
+  if((task) != NULL) {
+    add_task(task_id, task->function_ptr, task->arg_ptr, task->state, new_delay, sleeping_tasks);
+    delete_task(task_id, halted_tasks);
+    return;
+  }
+
+  task = get_task(task_id, sleeping_tasks);
+  if((task) != NULL) {
+    task->delay = new_delay;
+    gettimeofday(&(task->delay_ref), NULL);
+    return;
+  }
 }
