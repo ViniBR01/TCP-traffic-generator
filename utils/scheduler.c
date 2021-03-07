@@ -15,26 +15,38 @@
 
 #include "scheduler.h"
 
-int task_index = 0;
+#define N_MAX_TASKS 10
+
+typedef struct TCBstruct {
+  void (*ftpr)(void *p, unsigned int task_id);    //the function pointer
+  void *arg_ptr;			//the argument pointer
+  unsigned short int state;	//the task state
+  unsigned int delay;		//sleep delay in microseconds
+  struct timeval delay_ref;	//reference time when delay started
+} tcb;
+
 tcb TaskList[N_MAX_TASKS];
-int creating_index = 0;
+unsigned int task_index = 0;
+unsigned int creating_id = 0;
 // void (*readytasks[N_MAX_TASKS]) ();
 // void (*haltedtasks[N_MAX_TASKS]) ();
 // void (*sleepingtasks[N_MAX_TASKS]) ();
 
-int create_task(void (*function_ptr)(void *p), void *argument_ptr, unsigned short int state, unsigned int delay) {
-  int j = creating_index;
+unsigned int create_task( \
+    void (*function_ptr)(void *p, unsigned int task_id), \
+    void *argument_ptr, unsigned short int state, unsigned int delay) {
+  unsigned int j = creating_id;
   TaskList[j].ftpr = function_ptr;
   TaskList[j].arg_ptr = (void *) argument_ptr;
   TaskList[j].state = state;
   TaskList[j].delay = delay;
 
-  creating_index++;
-  TaskList[creating_index].ftpr = NULL;
+  creating_id++;
+  TaskList[creating_id].ftpr = NULL;
 }
 
-void start_task(void (*functionPTR)(void *) , void* param_ptr){
-  functionPTR(param_ptr);
+static void start_task(void (*functionPTR)(void *, unsigned int) , void* param_ptr, unsigned int task_id){
+  functionPTR(param_ptr, task_id);
 }
 
 void scheduler(){
@@ -45,7 +57,7 @@ void scheduler(){
   //	printf("No tasks exist.\n");/*No tasks!*/
   if(TaskList[task_index].state == STATE_READY) {
   //  printf("Function scheduler(); task_index = %d; State_ready\n", task_index);
-    start_task(TaskList[task_index].ftpr, TaskList[task_index].arg_ptr);
+    start_task(TaskList[task_index].ftpr, TaskList[task_index].arg_ptr, task_index);
   }else if(TaskList[task_index].state == STATE_WAITING) {
   //  printf("Function scheduler(); task_index = %d; State_waiting\n", task_index);
     struct timeval currentTime;
@@ -62,14 +74,14 @@ void scheduler(){
   return;
 }
 
-void halt_me(){
+void halt_me(unsigned int task_id){
   //Deactivates one task - the current one
-  TaskList[task_index].state = STATE_INACTIVE;
+  TaskList[task_id].state = STATE_INACTIVE;
 }
 
-void delay(unsigned int usec){
+void delay(unsigned int usec, unsigned int task_id){
   //Sets a delay value for tasks in microsecs
-  TaskList[task_index].state = STATE_WAITING;
-  TaskList[task_index].delay = usec;
-  gettimeofday(&TaskList[task_index].delay_ref, NULL);
+  TaskList[task_id].state = STATE_WAITING;
+  TaskList[task_id].delay = usec;
+  gettimeofday(&TaskList[task_id].delay_ref, NULL);
 }
