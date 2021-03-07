@@ -56,6 +56,11 @@ Ideally, we would like to have a hashtable for best bigO time performance.
 However, for a simpler implementation in C, we will use simple arrays.
 */
 
+void increase_task_block(tcb_t task_block) {
+  // XXX write this fuction later
+  return;
+}
+
 int add_task(unsigned int new_task_id,
               void (*new_function_ptr)(void *p, unsigned int task_id),
               void *new_arg_ptr, unsigned short int new_state, 
@@ -66,7 +71,7 @@ int add_task(unsigned int new_task_id,
     task_block.count = 0;
     task_block.iterator = NOT_ITERATING;
   } else if (task_block.count == task_block.capacity) {
-    increase_task_block(task_block); // XXX write this fuction later
+    increase_task_block(task_block);
   }
 
   /* Here we guarantee that the task block is allocated and has free space */
@@ -102,7 +107,7 @@ int delete_task(unsigned int delete_id, tcb_t task_block) {
     delete_id += 1;
   }
 
-  for(int i=delete_task; i<task_block.count-1; i++) {
+  for(int i=delete_index; i<task_block.count-1; i++) {
     task_block.task_list[i].task_id = task_block.task_list[i+1].task_id;
     task_block.task_list[i].function_ptr = task_block.task_list[i+1].function_ptr;
     task_block.task_list[i].arg_ptr = task_block.task_list[i+1].arg_ptr;
@@ -201,7 +206,7 @@ void scheduler(){
     while(i != NOT_ITERATING) {
       task_t *task = get_task(sleeping_tasks.task_list[i].task_id, ready_tasks);
       start_task(task->function_ptr, task->arg_ptr, task->task_id);
-      
+
       i = advance_iterator(ready_tasks);
     }
   }
