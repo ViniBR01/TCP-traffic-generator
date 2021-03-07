@@ -112,7 +112,7 @@ int delete_task(unsigned int delete_id, tcb_t task_block) {
   }
 
   task_block.count -= 1;
-  
+
   if (task_block.iterator > delete_id) {
     task_block.iterator -= 1;
   } else if (task_block.iterator == task_block.count) {
@@ -170,53 +170,42 @@ unsigned int create_task( void (*function_ptr)(void *p, unsigned int task_id), \
 void scheduler(){
   /* Check on all sleeping tasks and move them to ready task if delay is up */
 
-  //CARE: the 3 tcb DS may change during the loop execution!!!
+  /* CARE: the 3 tcb DS may change during the loop execution!!! 
+    Must use built-in iterator*/
 
   if(sleeping_tasks.task_list != NULL) {
+    struct timeval elapsedTime;
+    struct timeval currentTime;
+    gettimeofday(&currentTime, NULL);
+
     int i = start_iterator(sleeping_tasks);
+    
     while(i != NOT_ITERATING) {
-      //Here we know that a task exists at position i of sleeping tasks
-      //check if the timer is up
-      //if yes, move it to ready tasks
-      //if not, dont do anything
+      timersub(&currentTime, &(sleeping_tasks.task_list[i].delay_ref), &elapsedTime);
+      unsigned long time_in_micros = 1000000*elapsedTime.tv_sec + elapsedTime.tv_usec;
+
+      if (time_in_micros >= sleeping_tasks.task_list[i].delay) {
+        task_t *task = get_task(sleeping_tasks.task_list[i].task_id, sleeping_tasks);
+        add_task(task->task_id, task->function_ptr, task->arg_ptr, task->state, task->delay, ready_tasks);
+        delete_task(task->task_id, sleeping_tasks);
+      }
+
       i = advance_iterator(sleeping_tasks);
     }
   }
 
   /* Iterate through all ready tasks and execute them */
   if(ready_tasks.task_list != NULL) {
-    for(int i=0; i<ready_tasks.count; i++) {
-
+    int i = start_iterator(ready_tasks);
+    
+    while(i != NOT_ITERATING) {
+      task_t *task = get_task(sleeping_tasks.task_list[i].task_id, ready_tasks);
+      start_task(task->function_ptr, task->arg_ptr, task->task_id);
+      
+      i = advance_iterator(ready_tasks);
     }
   }
 
-
-
-
-
-
-
-  if(TaskList[task_index].function_ptr == NULL && task_index != 0) {
-    task_index = 0;
-  }
-  //if(TaskList[task_index].ftpr == NULL && task_index == 0) {
-  //	printf("No tasks exist.\n");/*No tasks!*/
-  if(TaskList[task_index].state == STATE_READY) {
-    start_task(TaskList[task_index].function_ptr, TaskList[task_index].arg_ptr, task_index);
-  }else if(TaskList[task_index].state == STATE_WAITING) {
-    struct timeval currentTime;
-    struct timeval elapsedTime;
-    gettimeofday(&currentTime, NULL);
-
-    timersub(&currentTime, &TaskList[task_index].delay_ref, &elapsedTime);
-    unsigned long time_in_micros = 1000000*elapsedTime.tv_sec + elapsedTime.tv_usec;
-
-    if ((unsigned long)TaskList[task_index].delay <= time_in_micros) {
-      TaskList[task_index].state = STATE_READY;
-      TaskList[task_index].delay = -1;
-    }
-  }
-  task_index++;
   return;
 }
 
