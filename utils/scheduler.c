@@ -47,18 +47,9 @@ void increase_task_block(tcb_t *task_block) {
 int add_task(unsigned int new_task_id,
               void (*new_function_ptr)(void *p, unsigned int task_id),
               void *new_arg_ptr, unsigned short int new_state, 
-              int new_delay, tcb_t *task_block) {
-  
-  //printf("\tAdd a new task to the DS: taks_id=%d\n", new_task_id);
-  
+              int new_delay, tcb_t *task_block) {  
   if (task_block->task_list == NULL) {
-
-    //printf("\t\tThe task block was not initiated. Use malloc to start it.\n");
-    //printf("\t\tPointer value before malloc: %p\n", task_block->task_list);
-
     task_block->task_list = (task_t *) malloc(MIN_TCB_SIZE * sizeof(task_t));
-
-    //printf("\t\tPointer value after malloc: %p\n", task_block->task_list);
 
     task_block->capacity = MIN_TCB_SIZE;
     task_block->count = 0;
@@ -76,9 +67,6 @@ int add_task(unsigned int new_task_id,
   task_block->task_list[new_index].delay = new_delay;
   gettimeofday(&(task_block->task_list[new_index].delay_ref), NULL);
   task_block->count += 1;
-
-  //printf("\t\tReady task counter = %d\n", ready_tasks.count);
-
 }
 
 task_t * get_task(unsigned int task_id, tcb_t task_block) {
@@ -146,16 +134,10 @@ static void start_task(void (*function_ptr)(void *, unsigned int) , void* param_
 
 unsigned int create_task( void (*function_ptr)(void *p, unsigned int task_id), \
                           void *argument_ptr, unsigned short int state, unsigned int delay) {
-  
-  //printf("Creating a new task: taks_id=%d\n", creating_id);
-
-  //printf("\tReady task counter = %d\n", ready_tasks.count);
-  
   int task_id = creating_id;
   creating_id += 1;
   switch(state) {
     case STATE_READY:
-    //printf("\tThe task state was set to STATE_READY.\n");
     add_task(task_id, function_ptr, argument_ptr, state, delay, &ready_tasks);
     break;
 
@@ -172,9 +154,6 @@ unsigned int create_task( void (*function_ptr)(void *p, unsigned int task_id), \
     exit(EXIT_FAILURE);
     /* NOTREACHED */
   }
-
-  //printf("\tReady task counter = %d\n", ready_tasks.count);
-
 }
 
 int kill_task(unsigned int task_id) {
@@ -186,8 +165,6 @@ void scheduler(){
 
   /* CARE: the 3 tcb DS may change during the loop execution!!! 
     Must use built-in iterator*/
-
-  ////printf("Start another round of the scheduler.\n");
 
   if(sleeping_tasks.task_list != NULL && sleeping_tasks.count > 0) {
     struct timeval elapsedTime;
@@ -212,9 +189,6 @@ void scheduler(){
 
   /* Iterate through all ready tasks and execute them */
   if(ready_tasks.task_list != NULL && ready_tasks.count > 0) {
-
-    //printf("The struct ready_tasks was already initiated.\n");
-
     int i = start_iterator(&ready_tasks);
     
     while(i != NOT_ITERATING) {
@@ -224,7 +198,6 @@ void scheduler(){
       i = advance_iterator(&ready_tasks);
     }
   }
-
   return;
 }
 
