@@ -173,8 +173,28 @@ unsigned int create_task( void (*function_ptr)(void *p, unsigned int task_id), \
 }
 
 int kill_task(unsigned int task_id) {
-  // XXX write this function later
-  return 0;
+  /* Deletes one task indicated by task_id.
+      Returns 0 if deleted, 1 if not found */
+
+  task_t *task = get_task(task_id, ready_tasks);
+  if((task) != NULL) {
+    delete_task(task_id, &ready_tasks);
+    return EXIT_SUCCESS;
+  }
+
+  task = get_task(task_id, sleeping_tasks);
+  if((task) != NULL) {
+    delete_task(task_id, &sleeping_tasks);
+    return EXIT_SUCCESS;
+  }
+
+  task = get_task(task_id, halted_tasks);
+  if((task) != NULL) {
+    delete_task(task_id, &halted_tasks);
+    return EXIT_SUCCESS;
+  }
+  
+  return EXIT_FAILURE;
 }
 
 void scheduler(){
@@ -257,4 +277,9 @@ void delay(int new_delay, unsigned int task_id){
     gettimeofday(&(task->delay_ref), NULL);
     return;
   }
+}
+
+int get_scheduler_time() {
+  // XXX write this function later
+  return 0;
 }
