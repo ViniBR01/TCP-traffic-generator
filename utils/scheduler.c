@@ -35,10 +35,12 @@ typedef struct TCBstruct {
   int iterator;
 } tcb_t;
 
-static unsigned int creating_id = 0;
 static tcb_t ready_tasks;
 static tcb_t halted_tasks;
 static tcb_t sleeping_tasks;
+static unsigned int creating_id = 0;
+static struct timeval start_time;
+static int current_time_msec = -1;
 
 /* In order to store the tasks we need a data structure. As a design choice, 
 we will use three copies of this DS to store active, sleeping and halted tasks.
@@ -202,17 +204,26 @@ int kill_task(unsigned int task_id) {
 void scheduler(){
   /* CARE: the 3 tcb DS may change during the loop execution!!! 
     Must use built-in iterator*/
+    
+  struct timeval elapsed_time;
+  struct timeval current_time;
+  gettimeofday(&current_time, NULL);
+
+  if(current_time_msec < 0) {
+    start_time = current_time;
+    current_time_msec = 0;
+  } else {
+    timersub(&current_time, &start_time, &elapsed_time);
+    unsigned long time_in_micros = 1000000*elapsed_time.tv_sec + elapsed_time.tv_usec;
+    current_time_msec = (int) (time_in_micros/1000);
+  }
 
   if(sleeping_tasks.task_list != NULL && sleeping_tasks.count > 0) {
-    struct timeval elapsedTime;
-    struct timeval currentTime;
-    gettimeofday(&currentTime, NULL);
-
     int i = start_iterator(&sleeping_tasks);
     
     while(i != NOT_ITERATING) {
-      timersub(&currentTime, &(sleeping_tasks.task_list[i].delay_ref), &elapsedTime);
-      unsigned long time_in_micros = 1000000*elapsedTime.tv_sec + elapsedTime.tv_usec;
+      timersub(&current_time, &(sleeping_tasks.task_list[i].delay_ref), &elapsed_time);
+      unsigned long time_in_micros = 1000000*elapsed_time.tv_sec + elapsed_time.tv_usec;
 
       if (time_in_micros >= sleeping_tasks.task_list[i].delay) {
         task_t *task = get_task(sleeping_tasks.task_list[i].task_id, sleeping_tasks);
@@ -281,7 +292,7 @@ void delay(int new_delay, unsigned int task_id){
   }
 }
 
-int get_scheduler_time() {
+int get_scheduler_time_msec() {
   // XXX write this function later
   return 0;
 }
