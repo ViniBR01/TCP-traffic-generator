@@ -170,6 +170,8 @@ unsigned int create_task( void (*function_ptr)(void *p, unsigned int task_id), \
     exit(EXIT_FAILURE);
     /* NOTREACHED */
   }
+
+  return task_id;
 }
 
 int kill_task(unsigned int task_id) {
