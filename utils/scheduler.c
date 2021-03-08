@@ -104,7 +104,7 @@ int delete_task(unsigned int delete_id, tcb_t *task_block) {
 
   int delete_index = 0;
   while(task_block->task_list[delete_index].task_id != delete_id) {
-    delete_id += 1;
+    delete_index += 1;
   }
 
   for(int i=delete_index; i<task_block->count-1; i++) {
