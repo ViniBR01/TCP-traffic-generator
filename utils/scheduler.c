@@ -19,10 +19,26 @@
 #define ERR_INVALID_STATE "The task state was invalid"
 #define NOT_ITERATING -1
 
+typedef struct TASKstruct {
+  unsigned int task_id;
+  void (*function_ptr)(void *p, unsigned int task_id);
+  void *arg_ptr;
+  unsigned short int state;
+  int delay;
+  struct timeval delay_ref;	  //reference time when delay started
+} task_t;
+
+typedef struct TCBstruct {
+  task_t *task_list;
+  int capacity;
+  int count;
+  int iterator;
+} tcb_t;
+
 static unsigned int creating_id = 0;
-tcb_t ready_tasks;
-tcb_t halted_tasks;
-tcb_t sleeping_tasks;
+static tcb_t ready_tasks;
+static tcb_t halted_tasks;
+static tcb_t sleeping_tasks;
 
 /* In order to store the tasks we need a data structure. As a design choice, 
 we will use three copies of this DS to store active, sleeping and halted tasks.
@@ -157,12 +173,11 @@ unsigned int create_task( void (*function_ptr)(void *p, unsigned int task_id), \
 }
 
 int kill_task(unsigned int task_id) {
+  // XXX write this function later
   return 0;
 }
 
 void scheduler(){
-  /* Check on all sleeping tasks and move them to ready task if delay is up */
-
   /* CARE: the 3 tcb DS may change during the loop execution!!! 
     Must use built-in iterator*/
 
@@ -187,7 +202,6 @@ void scheduler(){
     }
   }
 
-  /* Iterate through all ready tasks and execute them */
   if(ready_tasks.task_list != NULL && ready_tasks.count > 0) {
     int i = start_iterator(&ready_tasks);
     
