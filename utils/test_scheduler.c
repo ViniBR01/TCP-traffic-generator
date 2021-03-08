@@ -12,14 +12,12 @@ int main() {
     /* Test concurrency in tasks that use the same fuction */
 
     unsigned int *task_parameter1 = (unsigned int *) malloc(sizeof(unsigned int));
-    *task_parameter1 = 1000000;
+    *task_parameter1 = 3000000;
     create_task(periodic_task, (void *)task_parameter1, STATE_READY, -1);
 
     unsigned int *task_parameter2 = (unsigned int *) malloc(sizeof(unsigned int));
-    *task_parameter2 = 3000000;
+    *task_parameter2 = 1000000;
     create_task(periodic_task, (void *)task_parameter2, STATE_READY, -1);
-
-    
 
     //Now start scheduler
     while(1) {
@@ -31,7 +29,9 @@ int main() {
 
 void periodic_task(void *p, unsigned int task_id) {
     printf("Executing the periodic task with id: %d.\n", task_id);
-    printf("%d\n", *(unsigned int *)p);
+    static int counter = 0;
+    counter++;
+    printf("\tparam_value=%d | counter=%d\n", *(unsigned int *)p, counter);
     // printf("pointer address: %p\n\n", *(unsigned int *)p);
     delay(*(unsigned int *)p, task_id);
     return;
