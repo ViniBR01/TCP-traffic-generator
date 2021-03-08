@@ -204,7 +204,7 @@ int kill_task(unsigned int task_id) {
 void scheduler(){
   /* CARE: the 3 tcb DS may change during the loop execution!!! 
     Must use built-in iterator*/
-    
+
   struct timeval elapsed_time;
   struct timeval current_time;
   gettimeofday(&current_time, NULL);
@@ -293,6 +293,5 @@ void delay(int new_delay, unsigned int task_id){
 }
 
 int get_scheduler_time_msec() {
-  // XXX write this function later
-  return 0;
+  return current_time_msec;
 }
