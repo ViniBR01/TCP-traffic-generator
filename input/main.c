@@ -29,7 +29,7 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 /* 2 defines */
 //colon mandates an argument in OPTSTR; W is reserved for long options
 #define OPTSTR "vp:i:t:f:h"
-#define USAGE_FMT  "%s [-v] [-f hexflag] [-i inputfile] [-o outputfile] [-h]\n"
+#define USAGE_FMT  "%s [-v] [-i remoteIP] [-p port] [-t period] [-f filesize] [-h]\n"
 //#define ERR_FOPEN_INPUT  "fopen(input, r) XXX"
 //#define ERR_FOPEN_OUTPUT "fopen(output, w) XXX"
 #define ERR_CLIENT "client function blew up"
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
         //break
       
       case 'p':
-        options.port = (uint32_t )strtoul(optarg, NULL, 16);
+        options.port = (uint32_t )strtoul(optarg, NULL, 10);
         /* todo: validate the input port number XXX */
         break;
       
@@ -90,12 +90,12 @@ int main(int argc, char *argv[]) {
         break;
       
       case 't':
-        options.period = (uint32_t )strtoul(optarg, NULL, 16);
+        options.period = (uint32_t )strtoul(optarg, NULL, 10);
         /* todo: validate the input period XXX */
         break;
       
       case 'f':
-        options.file_size = (uint32_t )strtoul(optarg, NULL, 16);
+        options.file_size = (uint32_t )strtoul(optarg, NULL, 10);
         /* todo: validate the input file size XXX */
         break;
 
