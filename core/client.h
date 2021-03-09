@@ -7,7 +7,7 @@
 //#include <stdlib.h>
 #include <stdint.h>
 
-#include "main.h"
+#include "server.h"
 
 int client(options_t *options);
 

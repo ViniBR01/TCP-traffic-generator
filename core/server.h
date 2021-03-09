@@ -7,7 +7,15 @@
 //#include <stdlib.h>
 #include <stdint.h>
 
-#include "main.h"
+typedef struct {
+  int           verbose;
+  //uint32_t    flags;
+  //FILE       *configs;
+  uint32_t      port;
+  char         *remote_ip;
+  uint32_t      period;
+  uint32_t      file_size;
+} options_t;
 
 int server(options_t *options);
 
