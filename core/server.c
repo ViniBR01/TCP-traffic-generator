@@ -17,20 +17,8 @@
 #include "traffic_factory.h"
 #include "scheduler.h"
 
-#define LENGTH 1024 //buffer
-#define PORT 8081
-#define PORT 8081
-#define LENGTH 1024
-
-/* Do not use globals XXX */
-int period;
-int fsize;
-int portn;
-int new_socket;
-
-void taskA(void *p);
-void taskB(void *p);
-void taskC(void *p);
+void periodic_task(void *p, unsigned int task_id);
+void send_file_task(void *p, unsigned int task_id);
 
 int server(options_t *options) {
   printf("Inside of the server function.\n");
@@ -42,9 +30,9 @@ int server(options_t *options) {
 
   /* XXX do server stuff */
   //Read arguments from options
-  period = options->period;
-  fsize = options->file_size;
-  portn = options->port;
+  int period = (int) options->period;
+  int fsize = options->file_size;
+  int portn = options->port;
 
   //start all traffic model instances
   // A traffic generator is resposible to create files for transmissions
@@ -55,96 +43,10 @@ int server(options_t *options) {
   // ctx_t *traffic_generator = traffic_factory->create(period, fsize, portn);
   //eventually, do: traffic_factory->destroy(&traffic_generator);
 
-  //create tasks out of 
-
-
-
-
-
-
-
-  
-  /*Initialize tasks*/////////////////////////////////////////////////////////////////////////////////
-  int j = 0;
-
-  TaskList[j].ftpr = taskA;
-  TaskList[j].arg_ptr = NULL;
-  TaskList[j].state = STATE_READY;
-  TaskList[j].delay = -1;
-  j++;
-
-  TaskList[j].ftpr = taskB;
-  int task_B_Arg = 56;		//arbitrary number 56
-  int *ipB = &task_B_Arg;
-  TaskList[j].arg_ptr = (void *) ipB;
-  TaskList[j].state = STATE_INACTIVE;
-  TaskList[j].delay = -1;
-  j++;
-
-  TaskList[j].ftpr = taskC;
-  int task_C_Arg = 56;		//arbitrary number 56
-  int *ipC = &task_C_Arg;
-  TaskList[j].arg_ptr = (void *) ipC;
-  TaskList[j].state = STATE_INACTIVE;
-  TaskList[j].delay = -1;
-  j++;
-
-  TaskList[j].ftpr = NULL;
-
-  /*Initialize socket and file*////////////////////////////////////////////////////////////////////////
-  int server_fd;
-  //int new_socket;
-  int valread;
-  int opt = 1;
-  char buffer[1024] = {0};
-  char *hello = "Hello from server";
-  struct sockaddr_in address;
-  int addrlen = sizeof(address);
-
-  //create socket file descriptor
-  if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-    //handle error
-    perror("socket failed");
-    exit(EXIT_FAILURE);
-  }
-
-  //Set address of server
-  address.sin_family = AF_INET; 
-  address.sin_addr.s_addr = INADDR_ANY; 
-  address.sin_port = htons( portn );
-
-  //Attach socket to server address and port
-  if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
-    perror("bind failed"); 
-    exit(EXIT_FAILURE); 
-  } 
-
-  //Start listening for incoming connections
-  if (listen(server_fd, 3) < 0) { 
-    perror("listen"); 
-    exit(EXIT_FAILURE); 
-  } 
-
-  //Accept an incoming connection and register new_socket descriptor
-  if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
-    perror("accept"); 
-    exit(EXIT_FAILURE); 
-  }
-
-  //Read an incoming message from socket
-  valread = read(new_socket, buffer, 1024);
-  printf("%s\n", buffer);
-  
-
-
-
-
-
-
-
-
-
-
+  //Proof of concept
+  unsigned int *task_parameter1 = (unsigned int *) malloc(sizeof(unsigned int));
+  *task_parameter1 = (unsigned int) (1000*period);
+  create_task(periodic_task, (void *)task_parameter1, STATE_WAITING, 1000000);
 
   //Now start scheduler
   while(1) {
@@ -154,84 +56,19 @@ int server(options_t *options) {
   return EXIT_SUCCESS;
 }
 
-void taskA(void *p){
-  printf("This is the beggining of task A.\n");
-  //Call taskC with parameter = 1:
-  TaskList[2].state = STATE_WAITING; //taskC
-  //Select random phase
-  int phase = rand() % period;
-  TaskList[2].delay = phase;
-  gettimeofday(&TaskList[2].delay_ref, NULL);
-  printf("taskC will start in %d microseconds.\n", phase);
-  delay(period); //3.0 secs
-  printf("This is the end of task A.\n");
+void periodic_task(void *p, unsigned int task_id) {
+  int time = get_scheduler_time_msec();
+  printf("t=%4.d ms | Executing the periodic task with id: %d.\n", time, task_id);
+
+  create_task(send_file_task, NULL, STATE_WAITING, 50000);
+
+  delay(*(unsigned int *)p, task_id);
+  return;
 }
 
-void taskB(void *p){
-  printf("This is the beggining of task B.\n");
-  printf("Task B parameter is equals to: %d\n", *( (int*) TaskList[task_index].arg_ptr));
-  delay(1000000); //1.0 secs
-  //*( (int*) TaskList[task_index].arg_ptr) = *( (int*) TaskList[task_index].arg_ptr) + 1;
-  printf("This is the end of task B.\n");
-  halt_me();
-}
-
-void taskC(void *p){
-  printf("This is the beggining of task C.\n");
-  printf("Task C parameter is equals to: %d\n", *( (int*) TaskList[task_index].arg_ptr));
-  //delay(1000000); //1.0 secs
-  //*( (int*) TaskList[task_index].arg_ptr) = *( (int*) TaskList[task_index].arg_ptr) + 1;
-
-  //Create file and send it over the network
-  //Create file of a given size X and move pointer to the beggining of the file
-  char* f_name = "test.txt";
-  int status = remove(f_name);
-  if (status == 0) {
-    printf("File deleted successfully.\n");
-  } else {
-    printf("Unable to delete file.\n");
-  }
-  int X = fsize - 1; //Size = 10kB
-
-  FILE *fp = fopen(f_name, "w");
-  for (int i = 0; i<=X; i++) {
-    fprintf(fp, "b");
-  }
-  //close file
-  fclose(fp);
-
-  //////////////////////////////////////////////
-  //Send file that was just created to client:
-  int success = 0;
-  while(success == 0) {
-    char sdbuf[LENGTH]; // Send buffer
-    printf("[server] send %s to the client...\n", f_name);
-    fp = fopen(f_name, "r");
-    if(fp == NULL) {
-	    printf("ERROR: File %s not found.\n", f_name);
-	    exit(1);
-    }
-    bzero(sdbuf, LENGTH);
-    int f_block_sz;
-    f_block_sz = fread(sdbuf, sizeof(char), LENGTH, fp);
-    //printf("Going to while loop. Read one block from the file. Return value = %d.\n", f_block_sz);
-    while(f_block_sz>0) {
-    	//printf("TEST: entering while loop for sending file. f_block_sx = %d\n", f_block_sz);
-	    if(send(new_socket, sdbuf, f_block_sz, 0) < 0) {
-  	    printf("TEST: Entering if (send) statement.\n");
-	      printf("ERROR: Failed to send file %s.\n", f_name);
-	      break;
-	    }
-      //printf("TEST: After if (send) statement.\n");
-      bzero(sdbuf, LENGTH);
-    	f_block_sz = fread(sdbuf, sizeof(char), LENGTH, fp);
-	    //printf("TEST: End of while loop. Read one block from the file. Return value = %d.\n", f_block_sz);
-    }
-    printf("ok!\n");
-    success = 1;
-    while(waitpid(-1, NULL, WNOHANG) > 0);
-  }
-
-  printf("This is the end of task C.\n\n");
-  halt_me();
+void send_file_task(void *p, unsigned int task_id) {
+  int time = get_scheduler_time_msec();
+  printf("t=%4.d ms | Send a file starting now. This task id is: %d\n", time, task_id);
+  kill_task(task_id);
+  return;
 }
