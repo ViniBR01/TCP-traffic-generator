@@ -223,6 +223,7 @@ void open_server(void *server_options, unsigned int task_id) {
 
                 /* let's send a message to the client just for fun */
                 count = send(new_sock, message, strlen(message)+1, 0);
+
                 if (count < 0) {
         		    perror("error sending message to client.");
                     exit(EXIT_FAILURE);
@@ -265,75 +266,76 @@ void open_server(void *server_options, unsigned int task_id) {
                     no error. send() may send only a portion of the buffer
                     to be sent.
                 */
-	        }
+	        
 
-	        if (FD_ISSET(current->socket, &read_set)) {
-	            /* we have data from a client */
-	      
-	            count = recv(current->socket, buf, BUF_LEN, 0);
+                if (FD_ISSET(current->socket, &read_set)) {
+                    /* we have data from a client */
+            
+                    count = recv(current->socket, buf, BUF_LEN, 0);
 
-	            if (count <= 0) {
-		            /* something is wrong */
-                    if (count == 0) {
-                        printf("Client closed connection. Client IP address is: %s\n", inet_ntoa(current->client_addr.sin_addr));
-                    } else {
-                        perror("error receiving from a client");
-                    }
-
-                    /* connection is closed, clean up */
-                    close(current->socket);
-                    dump(&head, current->socket);
-                } else {
-                    /* we got count bytes of data from the client */
-                    /* in general, the amount of data received in a recv()
-                        call may not be a complete application message. it
-                        is important to check the data received against
-                        the message format you expect. if only a part of a
-                        message has been received, you must wait and
-                        receive the rest later when more data is available
-                        to be read */
-                    /* in this case, we expect a message where the first byte
-                        stores the number of bytes used to encode a number, 
-                        followed by that many bytes holding a numeric value */
-                    if (buf[0]+1 != count) {
-                        /* we got only a part of a message, we won't handle this in
-                            this simple example */
-                        printf("Message incomplete, something is still being transmitted\n");
-                        return;
-                    } else {
-                        switch(buf[0]) {
-                            case 1:
-                                /* note the type casting here forces signed extension
-                                    to preserve the signedness of the value */
-                                /* note also the use of parentheses for pointer 
-                                    dereferencing is critical here */
-                                num = (char) *(char *)(buf+1);
-                                break;
-                            case 2:
-                                /* note the type casting here forces signed extension
-                                    to preserve the signedness of the value */
-                                /* note also the use of parentheses for pointer 
-                                    dereferencing is critical here */
-                                /* note for 16 bit integers, byte ordering matters */
-                                num = (short) ntohs(*(short *)(buf+1));
-                                break;
-                            case 4:
-                                /* note the type casting here forces signed extension
-                                    to preserve the signedness of the value */
-                                /* note also the use of parentheses for pointer 
-                                    dereferencing is critical here */
-                                /* note for 32 bit integers, byte ordering matters */
-                                num = (int) ntohl(*(int *)(buf+1));
-                                break;
-                            default:
-                                break;
+                    if (count <= 0) {
+                        /* something is wrong */
+                        if (count == 0) {
+                            printf("Client closed connection. Client IP address is: %s\n", inet_ntoa(current->client_addr.sin_addr));
+                        } else {
+                            perror("error receiving from a client");
                         }
+
+                        /* connection is closed, clean up */
+                        close(current->socket);
+                        dump(&head, current->socket);
+                    } else {
+                        /* we got count bytes of data from the client */
+                        /* in general, the amount of data received in a recv()
+                            call may not be a complete application message. it
+                            is important to check the data received against
+                            the message format you expect. if only a part of a
+                            message has been received, you must wait and
+                            receive the rest later when more data is available
+                            to be read */
+                        /* in this case, we expect a message where the first byte
+                            stores the number of bytes used to encode a number, 
+                            followed by that many bytes holding a numeric value */
+                        if (buf[0]+1 != count) {
+                            /* we got only a part of a message, we won't handle this in
+                                this simple example */
+                            printf("Message incomplete, something is still being transmitted\n");
+                            return;
+                        } else {
+                            switch(buf[0]) {
+                                case 1:
+                                    /* note the type casting here forces signed extension
+                                        to preserve the signedness of the value */
+                                    /* note also the use of parentheses for pointer 
+                                        dereferencing is critical here */
+                                    num = (char) *(char *)(buf+1);
+                                    break;
+                                case 2:
+                                    /* note the type casting here forces signed extension
+                                        to preserve the signedness of the value */
+                                    /* note also the use of parentheses for pointer 
+                                        dereferencing is critical here */
+                                    /* note for 16 bit integers, byte ordering matters */
+                                    num = (short) ntohs(*(short *)(buf+1));
+                                    break;
+                                case 4:
+                                    /* note the type casting here forces signed extension
+                                        to preserve the signedness of the value */
+                                    /* note also the use of parentheses for pointer 
+                                        dereferencing is critical here */
+                                    /* note for 32 bit integers, byte ordering matters */
+                                    num = (int) ntohl(*(int *)(buf+1));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        /* a complete message is received, print it out */
+                        printf("Received the number \"%d\". Client IP address is: %s\n",
+                            num, inet_ntoa(current->client_addr.sin_addr));
                     }
-                    /* a complete message is received, print it out */
-                    printf("Received the number \"%d\". Client IP address is: %s\n",
-                        num, inet_ntoa(current->client_addr.sin_addr));
                 }
-	        }
+            }
 	    }
 	}
 }
