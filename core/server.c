@@ -12,10 +12,12 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <netdb.h>
 
 #include "server.h"
-//#include "traffic_factory.h"
 #include "scheduler.h"
+//#include "traffic_factory.h"
+#include "send_file.h"
 
 typedef struct {
   uint32_t period;
@@ -79,6 +81,22 @@ void send_file_task(void *p, unsigned int task_id) {
   printf("t=%4.d ms | Send a file starting now. File_size=%u | This task id is: %d\n", time, arg->fsize, task_id);
 
   //Here should call a function that starts a non-blocking file transmission
+  file_t *file_info = (file_t *) malloc(sizeof(file_t));
+  file_info->file_size = arg->fsize;
+  file_info->max_chunk_size = 1500;
+
+  unsigned int server_addr;
+  struct addrinfo *getaddrinfo_result, hints;
+  if (getaddrinfo("127.0.0.1", NULL, &hints, &getaddrinfo_result) == 0) {
+    server_addr = (unsigned int) ((struct sockaddr_in *) 
+                  (getaddrinfo_result->ai_addr))->sin_addr.s_addr;
+    freeaddrinfo(getaddrinfo_result);
+  }
+
+  file_info->remote_addr = server_addr; //hard-coded to be local server
+  file_info->remote_port = 8080;
+  create_task(start_file_transfer, (void *) file_info, STATE_READY, -1);
+  //////////////////////////////////////////////////////////////////////////
 
   kill_task(task_id);
   return;
