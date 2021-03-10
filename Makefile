@@ -18,8 +18,10 @@ CFLAGS= -I. \
 		-I./traffic_models \
 		-I./utils \
 
-SRC= 	main.c client.c server.c scheduler.c \
+SRC= 	main.c client.c server.c \
+		send_file.c open_server.c \
 		traffic_factory.c m_fixed_periodic.c \
+		scheduler.c \
 		
 _OBJ= $(SRC:.c=.o)
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
