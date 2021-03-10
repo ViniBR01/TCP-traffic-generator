@@ -1,6 +1,6 @@
 /* Script to test the server implementation */
 //to compile:
-//gcc -o test test_server.c server.c ./../utils/scheduler.c -I. -I./../utils
+//gcc -o test test_server.c server.c ./../utils/scheduler.c ./../network/send_file.c -I. -I./../utils -I./../network
 
 #include <stdio.h>
 #include <stdlib.h>
