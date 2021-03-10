@@ -110,8 +110,12 @@ void open_server(void *server_options, unsigned int task_id) {
     head.next = 0;
 
     /* create a server socket to listen for TCP connection requests */
-    if ((sock = socket (PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)    }
-}
+    if ((sock = socket (PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+        perror ("error opening TCP socket.");
+        exit(EXIT_FAILURE);
+        /* NOTREACHED */
+    }
+
     /* set option so we can reuse the port number quickly after a restart */
     if (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof (optval)) <0) {
         perror("error setting TCP socket option.");
@@ -168,8 +172,7 @@ void open_server(void *server_options, unsigned int task_id) {
             }
         }
 
-        time_out.tv_usec = 100000; /* 1-tenth of a second timeou    }
-}t */
+        time_out.tv_usec = 100000; /* 1-tenth of a second timeout */
         time_out.tv_sec = 0;
 
         /* invoke select, make sure to pass max+1 !!! */
@@ -243,17 +246,18 @@ void open_server(void *server_options, unsigned int task_id) {
                     */
 	                count = send(current->socket, buf, BUF_LEN, MSG_DONTWAIT);
 	                if (count < 0) {
-		            if (errno == EAGAIN) {
-                    /* we are trying to dump too much data down the socket,
-                        it cannot take more for the time being 
-                        will have to go back to select and wait til select
-                        tells us the socket is ready for writing
-                    */
-                    } else {
-                        /* something else is wrong */
-                        perror("error sending message to client.");
-                        exit(EXIT_FAILURE);
-                        /* NOTREACHED */
+                        if (errno == EAGAIN) {
+                        /* we are trying to dump too much data down the socket,
+                            it cannot take more for the time being 
+                            will have to go back to select and wait til select
+                            tells us the socket is ready for writing
+                        */
+                        } else {
+                            /* something else is wrong */
+                            perror("error sending message to client.");
+                            exit(EXIT_FAILURE);
+                            /* NOTREACHED */
+                        }
                     }
 	            }
                 /* note that it is important to check count for exactly
@@ -267,6 +271,7 @@ void open_server(void *server_options, unsigned int task_id) {
 	            /* we have data from a client */
 	      
 	            count = recv(current->socket, buf, BUF_LEN, 0);
+
 	            if (count <= 0) {
 		            /* something is wrong */
                     if (count == 0) {
@@ -294,41 +299,41 @@ void open_server(void *server_options, unsigned int task_id) {
                         /* we got only a part of a message, we won't handle this in
                             this simple example */
                         printf("Message incomplete, something is still being transmitted\n");
-                        return 0;
+                        return;
                     } else {
                         switch(buf[0]) {
-                        case 1:
-                            /* note the type casting here forces signed extension
-                                to preserve the signedness of the value */
-                            /* note also the use of parentheses for pointer 
-                                dereferencing is critical here */
-                            num = (char) *(char *)(buf+1);
-                            break;
-                        case 2:
-                            /* note the type casting here forces signed extension
-                                to preserve the signedness of the value */
-                            /* note also the use of parentheses for pointer 
-                                dereferencing is critical here */
-                            /* note for 16 bit integers, byte ordering matters */
-                            num = (short) ntohs(*(short *)(buf+1));
-                            break;
-                        case 4:
-                            /* note the type casting here forces signed extension
-                                to preserve the signedness of the value */
-                            /* note also the use of parentheses for pointer 
-                                dereferencing is critical here */
-                            /* note for 32 bit integers, byte ordering matters */
-                            num = (int) ntohl(*(int *)(buf+1));
-                            break;
-                        default:
-                            break;
+                            case 1:
+                                /* note the type casting here forces signed extension
+                                    to preserve the signedness of the value */
+                                /* note also the use of parentheses for pointer 
+                                    dereferencing is critical here */
+                                num = (char) *(char *)(buf+1);
+                                break;
+                            case 2:
+                                /* note the type casting here forces signed extension
+                                    to preserve the signedness of the value */
+                                /* note also the use of parentheses for pointer 
+                                    dereferencing is critical here */
+                                /* note for 16 bit integers, byte ordering matters */
+                                num = (short) ntohs(*(short *)(buf+1));
+                                break;
+                            case 4:
+                                /* note the type casting here forces signed extension
+                                    to preserve the signedness of the value */
+                                /* note also the use of parentheses for pointer 
+                                    dereferencing is critical here */
+                                /* note for 32 bit integers, byte ordering matters */
+                                num = (int) ntohl(*(int *)(buf+1));
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     /* a complete message is received, print it out */
                     printf("Received the number \"%d\". Client IP address is: %s\n",
                         num, inet_ntoa(current->client_addr.sin_addr));
                 }
 	        }
-
 	    }
 	}
 }
