@@ -13,9 +13,8 @@ typedef struct {
     int model_type;
 } flow_t;
 
-flow_t* create_flow(int model_type);
-int get_next_file();
-//More operations will be defined based on the design of the main scheduler
+flow_t* create_traffic_flow(int model_type);
+int get_next_file(flow_t *flow);
 
 #endif  /* _TRAFFIC_FACTORY_H */
 
