@@ -17,6 +17,11 @@
 #include "traffic_factory.h"
 #include "scheduler.h"
 
+typedef struct {
+  uint32_t period;
+  uint32_t fsize;
+} periodic_arg_t;
+
 void periodic_task(void *p, unsigned int task_id);
 void send_file_task(void *p, unsigned int task_id);
 
@@ -30,9 +35,9 @@ int server(options_t *options) {
 
   /* XXX do server stuff */
   //Read arguments from options
-  int period = (int) options->period;
-  int fsize = options->file_size;
-  int portn = options->port;
+  uint32_t period = options->period;
+  uint32_t fsize = options->file_size;
+  uint32_t portn = options->port;
 
   //start all traffic model instances
   // A traffic generator is resposible to create files for transmissions
@@ -44,9 +49,10 @@ int server(options_t *options) {
   //eventually, do: traffic_factory->destroy(&traffic_generator);
 
   //Proof of concept
-  unsigned int *task_parameter1 = (unsigned int *) malloc(sizeof(unsigned int));
-  *task_parameter1 = (unsigned int) (1000*period);
-  create_task(periodic_task, (void *)task_parameter1, STATE_WAITING, 1000000);
+  periodic_arg_t *task1_arg = (periodic_arg_t *) malloc(sizeof(periodic_arg_t));
+  task1_arg->period = (uint32_t) (1000*period);
+  task1_arg->fsize = (uint32_t) (1024*fsize);
+  create_task(periodic_task, (void *)task1_arg, STATE_WAITING, 1000000);
 
   //Now start scheduler
   while(1) {
@@ -60,15 +66,20 @@ void periodic_task(void *p, unsigned int task_id) {
   int time = get_scheduler_time_msec();
   printf("t=%4.d ms | Executing the periodic task with id: %d.\n", time, task_id);
 
-  create_task(send_file_task, NULL, STATE_WAITING, 50000);
+  create_task(send_file_task, p, STATE_WAITING, 50000);
 
-  delay(*(unsigned int *)p, task_id);
+  periodic_arg_t *arg = (periodic_arg_t *) p;
+  delay(arg->period, task_id);
   return;
 }
 
 void send_file_task(void *p, unsigned int task_id) {
   int time = get_scheduler_time_msec();
-  printf("t=%4.d ms | Send a file starting now. This task id is: %d\n", time, task_id);
+  periodic_arg_t *arg = (periodic_arg_t *) p;
+  printf("t=%4.d ms | Send a file starting now. File_size=%u | This task id is: %d\n", time, arg->fsize, task_id);
+
+  //Here should call a function that starts a non-blocking file transmission
+
   kill_task(task_id);
   return;
 }
