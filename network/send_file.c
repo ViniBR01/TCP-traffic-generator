@@ -8,6 +8,7 @@
 
 #include "send_file.h"
 
+/* Internal struct to maintain the status of a file transfer */
 typedef struct {
     file_t *file_info;
     int my_socket;
@@ -15,7 +16,8 @@ typedef struct {
     char *send_buffer;
 } file_status_t;
 
-void * start_file_transfer(file_t *file_info){
+int start_file_transfer(void *file_info_in, unsigned int task_id){
+    file_t *file_info = (file_t *) file_info_in;
     file_status_t *file_status = 
         (file_status_t *) malloc(sizeof(file_status_t));
     if (!file_status) {
@@ -60,13 +62,17 @@ void * start_file_transfer(file_t *file_info){
     // XXX write the logic to send first chunk with small header
     // file_status->already_sent += sent_bytes;
 
-    return (void *) file_status;
-}
+    //Schedule the send another chunk task for this file here??? Yes!
 
-int send_file_chunk(void *file_status) {
+    //Kill this task
+
     return EXIT_SUCCESS;
 }
 
-int clean_up_file_transfer(void *file_status) {
+int send_file_chunk(void *file_status, unsigned int task_id) {
+    return EXIT_SUCCESS;
+}
+
+int clean_up_file_transfer(void *file_status, unsigned int task_id) {
     return EXIT_SUCCESS;
 }
