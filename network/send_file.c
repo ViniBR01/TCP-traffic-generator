@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 
 #include "send_file.h"
+#include "scheduler.h"
 
 /* Internal struct to maintain the status of a file transfer */
 typedef struct {
