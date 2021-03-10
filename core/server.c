@@ -14,7 +14,7 @@
 #include <sys/wait.h>
 
 #include "server.h"
-#include "traffic_factory.h"
+//#include "traffic_factory.h"
 #include "scheduler.h"
 
 typedef struct {
