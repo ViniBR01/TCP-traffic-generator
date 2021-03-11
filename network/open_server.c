@@ -217,15 +217,6 @@ void open_server(void *server_options, unsigned int task_id) {
 
                 /* remember this client connection in our linked list */
                 add(&head, new_sock, addr);
-
-                /* let's send a message to the client just for fun */
-                count = send(new_sock, message, strlen(message)+1, 0);
-
-                if (count < 0) {
-        		    perror("error sending message to client.");
-                    exit(EXIT_FAILURE);
-                    /* NOTREACHED */
-                }
 	        }
 
             /* check other connected sockets, see if there is

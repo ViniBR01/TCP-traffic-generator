@@ -71,36 +71,6 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
         /* NOTREACHED */
     }
 
-    //Testing up to this point: communicate with the example server
-    /* everything looks good, since we are expecting a
-     message from the server in this example, let's try receiving a
-     message from the socket. this call will block until some data
-     has been received */
-    //printf("This socket has id: %d\n", my_socket);
-    char *buffer;
-    int size = 500;
-    buffer = (char *) malloc(size);
-    int count = recv(my_socket, buffer, size, 0);
-    if (count < 0) {
-        perror("receive failure.");
-        exit(EXIT_FAILURE);
-        /* NOTREACHED */
-    }
-
-    /* in this simple example, the message is a string, 
-        we expect the last byte of the string to be 0, i.e. end of string */
-    if (buffer[count-1] != 0) {
-        /* In general, TCP recv can return any number of bytes, not
-        necessarily forming a complete message, so you need to
-        parse the input to see if a complete message has been received.
-            if not, more calls to recv is needed to get a complete message.
-        */
-        printf("Message incomplete, something is still being transmitted\n");
-    } else {
-        //printf("Here is what we got: %s", buffer);
-    }
-    ///////////////////////////////////////////////////////////////////////
-
     /* Send the first chunck with size information */
     // XXX write the logic to send first chunk with small header
     fill_buffer(file_status->send_buffer, file_status->file_info->max_chunk_size); //XXX write this function
