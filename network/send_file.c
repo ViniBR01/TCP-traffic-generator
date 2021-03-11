@@ -106,7 +106,7 @@ void send_file_chunk(void *file_status, unsigned int task_id) {
 
             //calculate time to send file:
             int total_time_to_send = get_scheduler_time_usec() - file_status_in->start_time_usec;
-            printf("\tTime to transmit file: %d us\n", total_time_to_send);
+            printf("%d\n", total_time_to_send);
         
             create_task(clean_up_file_transfer, (void *) file_status, STATE_READY, -1);
             kill_task(task_id);
