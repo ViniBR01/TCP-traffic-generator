@@ -74,7 +74,7 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
      message from the server in this example, let's try receiving a
      message from the socket. this call will block until some data
      has been received */
-    printf("This socket has id: %d\n", my_socket);
+    //printf("This socket has id: %d\n", my_socket);
     char *buffer;
     int size = 500;
     buffer = (char *) malloc(size);
@@ -95,7 +95,7 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
         */
         printf("Message incomplete, something is still being transmitted\n");
     } else {
-        printf("Here is what we got: %s", buffer);
+        //printf("Here is what we got: %s", buffer);
     }
     ///////////////////////////////////////////////////////////////////////
 
@@ -123,7 +123,7 @@ void send_file_chunk(void *file_status, unsigned int task_id) {
 
         //calculate time to send file:
         int total_time_to_send = get_scheduler_time_usec() - file_status_in->start_time_usec;
-        printf("\tTime to transmit file: %d ms\n", total_time_to_send);
+        printf("\tTime to transmit file: %d us\n", total_time_to_send);
         
         create_task(clean_up_file_transfer, (void *) file_status, STATE_WAITING, 1000000);
         kill_task(task_id);

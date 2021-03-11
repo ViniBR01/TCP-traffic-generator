@@ -66,11 +66,14 @@ int server(options_t *options) {
 
 void periodic_task(void *p, unsigned int task_id) {
   int time = get_scheduler_time_usec();
-  printf("t=%4.d ms | Executing the periodic task with id: %d.\n", time, task_id);
+  //printf("t=%4.d ms | Executing the periodic task with id: %d.\n", time, task_id);
 
-  create_task(send_file_task, p, STATE_WAITING, 50000);
-
+  /* Get a random phase between 0 and T */
   periodic_arg_t *arg = (periodic_arg_t *) p;
+  unsigned int phase_delay = rand() % arg->period;
+
+  create_task(send_file_task, p, STATE_WAITING, phase_delay);
+
   delay(arg->period, task_id);
   return;
 }
@@ -78,7 +81,7 @@ void periodic_task(void *p, unsigned int task_id) {
 void send_file_task(void *p, unsigned int task_id) {
   int time = get_scheduler_time_usec();
   periodic_arg_t *arg = (periodic_arg_t *) p;
-  printf("t=%4.d ms | Send a file starting now. File_size=%u | This task id is: %d\n", time, arg->fsize, task_id);
+  //printf("t=%4.d ms | Send a file starting now. File_size=%u | This task id is: %d\n", time, arg->fsize, task_id);
 
   //Here should call a function that starts a non-blocking file transmission
   file_t *file_info = (file_t *) malloc(sizeof(file_t));

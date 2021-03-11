@@ -286,8 +286,8 @@ void open_server(void *server_options, unsigned int task_id) {
                         /* XXX finish-me: should have a status for file and check if transmissions ended */
                         
                         /* a complete message is received, print it out */
-                        printf("Received a file chunck with size \"%d\". Client IP address is: %s\n",
-                            count, inet_ntoa(current->client_addr.sin_addr));
+                        /*printf("Received a file chunck with size \"%d\". Client IP address is: %s\n",
+                            count, inet_ntoa(current->client_addr.sin_addr));*/
                     }
                 }
             }
