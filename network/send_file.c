@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <linux/sockios.h>
 
 #include "send_file.h"
 #include "scheduler.h"
@@ -115,19 +117,31 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
 
 void send_file_chunk(void *file_status, unsigned int task_id) {
     /* Here we have access to a socket, a sendbuffer, a file size and how much was already sent */
-    //First, check if file has already finished transmitting
+    /* Check if file has already finished transmitting */
     file_status_t *file_status_in = file_status;
     int remaining_size = (int) file_status_in->file_info->file_size - (int) file_status_in->already_sent;
-    if (remaining_size <= 0) {
-        //end of transmission XXX
 
-        //calculate time to send file:
-        int total_time_to_send = get_scheduler_time_usec() - file_status_in->start_time_usec;
-        printf("\tTime to transmit file: %d us\n", total_time_to_send);
+    if (remaining_size <= 0) {
+        /* Check if socket buffer is empty or still has data to be consumed */
+        int pending = 0;
+        int err = ioctl(file_status_in->my_socket, SIOCOUTQ, &pending);
+        if (err < 0) {
+            perror("error checking socket send buffer.");
+            exit(EXIT_FAILURE);
+            /* NOTREACHED */
+        }
+
+        if (pending == 0) {
+            //end of transmission XXX
+
+            //calculate time to send file:
+            int total_time_to_send = get_scheduler_time_usec() - file_status_in->start_time_usec;
+            printf("\tTime to transmit file: %d us\n", total_time_to_send);
         
-        create_task(clean_up_file_transfer, (void *) file_status, STATE_WAITING, 1000000);
-        kill_task(task_id);
-        //
+            create_task(clean_up_file_transfer, (void *) file_status, STATE_READY, -1);
+            kill_task(task_id);
+        }
+
     } else {
         //send another chunk
         int send_size = mymin(remaining_size, file_status_in->file_info->max_chunk_size);
