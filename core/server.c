@@ -22,6 +22,8 @@
 typedef struct {
   uint32_t period;
   uint32_t fsize;
+  char *remote_ip;
+  uint32_t port;
 } periodic_arg_t;
 
 void periodic_task(void *p, unsigned int task_id);
@@ -36,6 +38,7 @@ int server(options_t *options) {
   }
 
   /* XXX do server stuff */
+
   //Read arguments from options
   uint32_t period = options->period;
   uint32_t fsize = options->file_size;
@@ -54,6 +57,8 @@ int server(options_t *options) {
   periodic_arg_t *task1_arg = (periodic_arg_t *) malloc(sizeof(periodic_arg_t));
   task1_arg->period = (uint32_t) (1000*period);
   task1_arg->fsize = (uint32_t) (1024*fsize);
+  task1_arg->remote_ip = options->remote_ip;
+  task1_arg->port = (uint32_t) portn;
   create_task(periodic_task, (void *)task1_arg, STATE_WAITING, 1000000);
 
   //Now start scheduler
@@ -87,16 +92,7 @@ void send_file_task(void *p, unsigned int task_id) {
   file_t *file_info = (file_t *) malloc(sizeof(file_t));
   file_info->file_size = arg->fsize;
   file_info->max_chunk_size = 1500;
-
-  unsigned int server_addr;
-  struct addrinfo *getaddrinfo_result, hints;
-  if (getaddrinfo("127.0.0.1", NULL, &hints, &getaddrinfo_result) == 0) {
-    server_addr = (unsigned int) ((struct sockaddr_in *) 
-                  (getaddrinfo_result->ai_addr))->sin_addr.s_addr;
-    freeaddrinfo(getaddrinfo_result);
-  }
-
-  file_info->remote_addr = server_addr; //hard-coded to be local server
+  file_info->remote_addr = arg->remote_ip;
   file_info->remote_port = 8080;
   create_task(start_file_transfer, (void *) file_info, STATE_READY, -1);
   //////////////////////////////////////////////////////////////////////////
