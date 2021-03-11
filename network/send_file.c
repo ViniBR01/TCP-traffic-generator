@@ -14,6 +14,7 @@
 
 #include "send_file.h"
 #include "scheduler.h"
+#include "log_file.h"
 
 /* Internal struct to maintain the status of a file transfer */
 typedef struct {
@@ -106,8 +107,8 @@ void send_file_chunk(void *file_status, unsigned int task_id) {
 
             //calculate time to send file:
             int total_time_to_send = get_scheduler_time_usec() - file_status_in->start_time_usec;
-            printf("%d\n", total_time_to_send);
-        
+            printf("Download time = %d usec\n", total_time_to_send);
+            int retval = log_int(total_time_to_send);
             create_task(clean_up_file_transfer, (void *) file_status, STATE_READY, -1);
             kill_task(task_id);
         }
