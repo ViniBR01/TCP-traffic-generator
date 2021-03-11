@@ -87,9 +87,6 @@ void open_server(void *server_options, unsigned int task_id) {
     /* number of bytes sent/received */
     int count;
 
-    /* numeric value received */
-    int num;
-
     /* linked list for keeping track of connected sockets */
     struct node head;
     struct node *current, *next;
@@ -286,53 +283,11 @@ void open_server(void *server_options, unsigned int task_id) {
                         dump(&head, current->socket);
                     } else {
                         /* we got count bytes of data from the client */
-                        /* in general, the amount of data received in a recv()
-                            call may not be a complete application message. it
-                            is important to check the data received against
-                            the message format you expect. if only a part of a
-                            message has been received, you must wait and
-                            receive the rest later when more data is available
-                            to be read */
-                        /* in this case, we expect a message where the first byte
-                            stores the number of bytes used to encode a number, 
-                            followed by that many bytes holding a numeric value */
-                        if (buf[0]+1 != count) {
-                            /* we got only a part of a message, we won't handle this in
-                                this simple example */
-                            printf("Message incomplete, something is still being transmitted\n");
-                            return;
-                        } else {
-                            switch(buf[0]) {
-                                case 1:
-                                    /* note the type casting here forces signed extension
-                                        to preserve the signedness of the value */
-                                    /* note also the use of parentheses for pointer 
-                                        dereferencing is critical here */
-                                    num = (char) *(char *)(buf+1);
-                                    break;
-                                case 2:
-                                    /* note the type casting here forces signed extension
-                                        to preserve the signedness of the value */
-                                    /* note also the use of parentheses for pointer 
-                                        dereferencing is critical here */
-                                    /* note for 16 bit integers, byte ordering matters */
-                                    num = (short) ntohs(*(short *)(buf+1));
-                                    break;
-                                case 4:
-                                    /* note the type casting here forces signed extension
-                                        to preserve the signedness of the value */
-                                    /* note also the use of parentheses for pointer 
-                                        dereferencing is critical here */
-                                    /* note for 32 bit integers, byte ordering matters */
-                                    num = (int) ntohl(*(int *)(buf+1));
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
+                        /* XXX finish-me: should have a status for file and check if transmissions ended */
+                        
                         /* a complete message is received, print it out */
-                        printf("Received the number \"%d\". Client IP address is: %s\n",
-                            num, inet_ntoa(current->client_addr.sin_addr));
+                        printf("Received a file chunck with size \"%d\". Client IP address is: %s\n",
+                            count, inet_ntoa(current->client_addr.sin_addr));
                     }
                 }
             }
