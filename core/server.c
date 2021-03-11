@@ -65,7 +65,7 @@ int server(options_t *options) {
 }
 
 void periodic_task(void *p, unsigned int task_id) {
-  int time = get_scheduler_time_msec();
+  int time = get_scheduler_time_usec();
   printf("t=%4.d ms | Executing the periodic task with id: %d.\n", time, task_id);
 
   create_task(send_file_task, p, STATE_WAITING, 50000);
@@ -76,7 +76,7 @@ void periodic_task(void *p, unsigned int task_id) {
 }
 
 void send_file_task(void *p, unsigned int task_id) {
-  int time = get_scheduler_time_msec();
+  int time = get_scheduler_time_usec();
   periodic_arg_t *arg = (periodic_arg_t *) p;
   printf("t=%4.d ms | Send a file starting now. File_size=%u | This task id is: %d\n", time, arg->fsize, task_id);
 

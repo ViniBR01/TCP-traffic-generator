@@ -18,6 +18,7 @@ typedef struct {
     int my_socket;
     int already_sent;
     char *send_buffer;
+    int start_time_usec;
 } file_status_t;
 
 void fill_buffer(char *buffer, int length);
@@ -50,6 +51,8 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
         /* NOTREACHED */
     }
     file_status->my_socket = my_socket;
+
+    file_status->start_time_usec = get_scheduler_time_usec();
 
     /* fill in the server's address */
     struct sockaddr_in sin;
@@ -117,6 +120,11 @@ void send_file_chunk(void *file_status, unsigned int task_id) {
     int remaining_size = (int) file_status_in->file_info->file_size - (int) file_status_in->already_sent;
     if (remaining_size <= 0) {
         //end of transmission XXX
+
+        //calculate time to send file:
+        int total_time_to_send = get_scheduler_time_usec() - file_status_in->start_time_usec;
+        printf("\tTime to transmit file: %d ms\n", total_time_to_send);
+        
         create_task(clean_up_file_transfer, (void *) file_status, STATE_WAITING, 1000000);
         kill_task(task_id);
         //

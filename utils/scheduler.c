@@ -40,7 +40,7 @@ static tcb_t halted_tasks;
 static tcb_t sleeping_tasks;
 static unsigned int creating_id = 0;
 static struct timeval start_time;
-static int current_time_msec = -1;
+static int current_time_usec = -1;
 
 /* In order to store the tasks we need a data structure. As a design choice, 
 we will use three copies of this DS to store active, sleeping and halted tasks.
@@ -209,13 +209,13 @@ void scheduler(){
   struct timeval current_time;
   gettimeofday(&current_time, NULL);
 
-  if(current_time_msec < 0) {
+  if(current_time_usec < 0) {
     start_time = current_time;
-    current_time_msec = 0;
+    current_time_usec = 0;
   } else {
     timersub(&current_time, &start_time, &elapsed_time);
     unsigned long time_in_micros = 1000000*elapsed_time.tv_sec + elapsed_time.tv_usec;
-    current_time_msec = (int) (time_in_micros/1000);
+    current_time_usec = (int) (time_in_micros);
   }
 
   if(sleeping_tasks.task_list != NULL && sleeping_tasks.count > 0) {
@@ -292,6 +292,6 @@ void delay(int new_delay, unsigned int task_id){
   }
 }
 
-int get_scheduler_time_msec() {
-  return current_time_msec;
+int get_scheduler_time_usec() {
+  return current_time_usec;
 }

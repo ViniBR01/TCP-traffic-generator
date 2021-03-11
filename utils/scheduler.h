@@ -16,6 +16,6 @@ int kill_task(unsigned int task_id);
 void scheduler();
 void halt_me(unsigned int task_id);
 void delay(int new_delay, unsigned int task_id); //delay in usec
-int get_scheduler_time_msec();
+int get_scheduler_time_usec();
 
 #endif  /* _SERVER_H */
