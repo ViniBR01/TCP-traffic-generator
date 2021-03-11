@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <sys/ioctl.h>
 #include <linux/sockios.h>
 
@@ -60,8 +61,7 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
     struct sockaddr_in sin;
     memset (&sin, 0, sizeof (sin));
     sin.sin_family = AF_INET;
-    //sin.sin_addr.s_addr = file_info->remote_addr;
-    sin.sin_addr.s_addr = 16777343; // XXX Fix-me: parsing the remote_addr has a bug
+    inet_aton(file_info->remote_addr, &sin.sin_addr);
     sin.sin_port = htons(file_info->remote_port);
 
     /* connect to the server */

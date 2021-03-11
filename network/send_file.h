@@ -4,7 +4,7 @@
 typedef struct {
     int file_size;
     int max_chunk_size;
-    unsigned int remote_addr;
+    char *remote_addr;
     unsigned short remote_port;
 } file_t;
 
