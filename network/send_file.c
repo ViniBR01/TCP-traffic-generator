@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <sys/ioctl.h>
 #include <linux/sockios.h>
@@ -54,8 +55,21 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
         exit(EXIT_FAILURE);
         /* NOTREACHED */
     }
-    file_status->my_socket = my_socket;
 
+    /* disable nagle's algorithm to guarantee max speed */
+    int flag =1;
+    int return_val = setsockopt(my_socket,
+                                IPPROTO_TCP,
+                                TCP_NODELAY,
+                                (char *) &flag,
+                                sizeof(int));
+    if (return_val < 0) {
+        perror("error setting nagle's option");
+        exit(EXIT_FAILURE);
+        /* NOTREACHED */
+    }
+
+    file_status->my_socket = my_socket;
     file_status->start_time_usec = get_scheduler_time_usec();
 
     /* fill in the server's address */
