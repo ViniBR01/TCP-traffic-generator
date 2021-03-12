@@ -5,20 +5,21 @@
 # ref: https://spin.atomicobject.com/2017/08/24/start-stop-bash-background-process/
 
 filesize=100
+periodtime=1000
 runtime=5s
 
 echo "Starting experiments!"
 
 trap "pkill start-server" EXIT
 
-./start-server -i 192.168.0.101 -f $filesize &
-./start-server -i 192.168.0.102 -f $filesize &
-./start-server -i 192.168.0.103 -f $filesize &
-./start-server -i 192.168.0.104 -f $filesize &
-./start-server -i 192.168.0.105 -f $filesize &
-./start-server -i 192.168.0.106 -f $filesize &
-./start-server -i 192.168.0.107 -f $filesize &
-./start-server -i 192.168.0.108 -f $filesize &
+./start-server -i 192.168.0.101 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.102 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.103 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.104 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.105 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.106 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.107 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.108 -f $filesize -t $periodtime &
 
 sleep $runtime
 exit 0
