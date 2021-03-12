@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
 
@@ -107,7 +108,7 @@ void open_server(void *server_options, unsigned int task_id) {
     head.next = 0;
 
     /* create a server socket to listen for TCP connection requests */
-    if ((sock = socket (PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+    if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
         perror ("error opening TCP socket.");
         exit(EXIT_FAILURE);
         /* NOTREACHED */
@@ -115,6 +116,13 @@ void open_server(void *server_options, unsigned int task_id) {
 
     /* set option so we can reuse the port number quickly after a restart */
     if (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof (optval)) <0) {
+        perror("error setting TCP socket option.");
+        exit(EXIT_FAILURE);
+        /* NOTREACHED */
+    }
+
+    /* set option so we turn off the delayed TCP ack in this socket */
+    if (setsockopt (sock, IPPROTO_TCP, TCP_QUICKACK, &optval, sizeof (optval)) <0) {
         perror("error setting TCP socket option.");
         exit(EXIT_FAILURE);
         /* NOTREACHED */
@@ -209,6 +217,38 @@ void open_server(void *server_options, unsigned int task_id) {
                     exit(EXIT_FAILURE);
                     /* NOTREACHED */
                 }
+
+                /* set option so we turn off the delayed TCP ack in this socket */
+                if (setsockopt (sock, 
+                                IPPROTO_TCP, 
+                                TCP_QUICKACK, 
+                                &optval, 
+                                sizeof (optval)) <0) {
+                    perror("error setting TCP socket option.");
+                    exit(EXIT_FAILURE);
+                    /* NOTREACHED */
+                }
+
+                /* Try to set intial window size to ~2kB */
+                // optval = 4096;
+                // if(setsockopt(sock,
+                //                 SOL_SOCKET,
+                //                 SO_RCVBUF,
+                //                 &optval,
+                //                 sizeof(int)) < 0) {
+                //     perror("error setting recv buf size");
+                //     exit(EXIT_FAILURE);
+                //     /* NOTREACHED */
+                // }
+                // if(setsockopt(sock,
+                //                 SOL_SOCKET,
+                //                 SO_SNDBUF,
+                //                 &optval,
+                //                 sizeof(int)) < 0) {
+                //     perror("error setting send buf size");
+                //     exit(EXIT_FAILURE);
+                //     /* NOTREACHED */
+                // }
   
                 /* the connection is made, everything is ready */
                 /* let's see who's connecting to us */

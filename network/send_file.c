@@ -57,17 +57,37 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
     }
 
     /* disable nagle's algorithm to guarantee max speed */
-    int flag =1;
-    int return_val = setsockopt(my_socket,
-                                IPPROTO_TCP,
-                                TCP_NODELAY,
-                                (char *) &flag,
-                                sizeof(int));
-    if (return_val < 0) {
+    int optval =1;
+    if(setsockopt(my_socket,
+                    IPPROTO_TCP,
+                    TCP_NODELAY,
+                    (char *) &optval,
+                    sizeof(int)) < 0) {
         perror("error setting nagle's option");
         exit(EXIT_FAILURE);
         /* NOTREACHED */
     }
+
+    /* Try to set intial window size to ~2kB */
+    // optval = 4096;
+    // if(setsockopt(my_socket,
+    //                 SOL_SOCKET,
+    //                 SO_RCVBUF,
+    //                 &optval,
+    //                 sizeof(int)) < 0) {
+    //     perror("error setting recv buf size");
+    //     exit(EXIT_FAILURE);
+    //     /* NOTREACHED */
+    // }
+    // if(setsockopt(my_socket,
+    //                 SOL_SOCKET,
+    //                 SO_SNDBUF,
+    //                 &optval,
+    //                 sizeof(int)) < 0) {
+    //     perror("error setting send buf size");
+    //     exit(EXIT_FAILURE);
+    //     /* NOTREACHED */
+    // }
 
     file_status->my_socket = my_socket;
     file_status->start_time_usec = get_scheduler_time_usec();
