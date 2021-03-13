@@ -16,18 +16,7 @@
 
 #include "server.h"
 #include "scheduler.h"
-//#include "traffic_factory.h"
-#include "send_file.h"
-
-typedef struct {
-  uint32_t period;
-  uint32_t fsize;
-  char *remote_ip;
-  uint32_t port;
-} periodic_arg_t;
-
-void periodic_task(void *p, unsigned int task_id);
-void send_file_task(void *p, unsigned int task_id);
+#include "traffic_factory.h"
 
 int server(options_t *options) {
   printf("Inside of the server function.\n");
@@ -39,11 +28,6 @@ int server(options_t *options) {
 
   /* XXX do server stuff */
 
-  //Read arguments from options
-  uint32_t period = options->period;
-  uint32_t fsize = options->file_size;
-  uint32_t portn = options->port;
-
   //start all traffic model instances
   // A traffic generator is resposible to create files for transmissions
   //They provede interface to create a traffic generation task. This task
@@ -52,14 +36,12 @@ int server(options_t *options) {
   // traffic_factory_ops traffic_factory = get_traffic_factory(FIXED_PERIODIC);
   // ctx_t *traffic_generator = traffic_factory->create(period, fsize, portn);
   //eventually, do: traffic_factory->destroy(&traffic_generator);
-
-  //Proof of concept
-  periodic_arg_t *task1_arg = (periodic_arg_t *) malloc(sizeof(periodic_arg_t));
-  task1_arg->period = (uint32_t) (1000*period);
-  task1_arg->fsize = (uint32_t) (1024*fsize);
-  task1_arg->remote_ip = options->remote_ip;
-  task1_arg->port = (uint32_t) portn;
-  create_task(periodic_task, (void *)task1_arg, STATE_WAITING, 1000000);
+  traffic_t *traffic_arg = (traffic_t *)malloc(sizeof(traffic_t));
+  traffic_arg->period = options->period;
+  traffic_arg->file_size = options->file_size;
+  traffic_arg->remote_ip = options->remote_ip;
+  traffic_arg->port = options->port;
+  int retval = create_traffic(traffic_arg);
 
   //Now start scheduler
   while(1) {
@@ -67,36 +49,4 @@ int server(options_t *options) {
   }
 
   return EXIT_SUCCESS;
-}
-
-void periodic_task(void *p, unsigned int task_id) {
-  int time = get_scheduler_time_usec();
-  //printf("t=%4.d ms | Executing the periodic task with id: %d.\n", time, task_id);
-
-  /* Get a random phase between 0 and T */
-  periodic_arg_t *arg = (periodic_arg_t *) p;
-  unsigned int phase_delay = rand() % arg->period;
-
-  create_task(send_file_task, p, STATE_WAITING, phase_delay);
-
-  delay(arg->period, task_id);
-  return;
-}
-
-void send_file_task(void *p, unsigned int task_id) {
-  int time = get_scheduler_time_usec();
-  periodic_arg_t *arg = (periodic_arg_t *) p;
-  //printf("t=%4.d ms | Send a file starting now. File_size=%u | This task id is: %d\n", time, arg->fsize, task_id);
-
-  //Here should call a function that starts a non-blocking file transmission
-  file_t *file_info = (file_t *) malloc(sizeof(file_t));
-  file_info->file_size = arg->fsize;
-  file_info->max_chunk_size = 1500;
-  file_info->remote_addr = arg->remote_ip;
-  file_info->remote_port = 8080;
-  create_task(start_file_transfer, (void *) file_info, STATE_READY, -1);
-  //////////////////////////////////////////////////////////////////////////
-
-  kill_task(task_id);
-  return;
 }

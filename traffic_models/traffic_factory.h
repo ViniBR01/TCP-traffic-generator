@@ -11,10 +11,13 @@
 typedef struct {
     int id;
     int model_type;
-} flow_t;
+    uint32_t period;
+    uint32_t file_size;
+    char *remote_ip;
+    uint32_t port;
+} traffic_t;
 
-flow_t* create_traffic_flow(int model_type);
-int get_next_file(flow_t *flow);
+int create_traffic(traffic_t* traffic_parameters);
 
 #endif  /* _TRAFFIC_FACTORY_H */
 
