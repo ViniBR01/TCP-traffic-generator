@@ -28,14 +28,16 @@ int server(options_t *options) {
 
   /* XXX do server stuff */
 
-  //start all traffic model instances
-  // A traffic generator is resposible to create files for transmissions
-  //They provede interface to create a traffic generation task. This task
+  /* start all traffic model instances */
+  // A traffic generator is resposible for creating files for transmissions
+  //They provide interface to create a traffic generation task. This task
   //creates files with a specified size in kB and at specified time.
   //1 - fixed periodic:
   // traffic_factory_ops traffic_factory = get_traffic_factory(FIXED_PERIODIC);
   // ctx_t *traffic_generator = traffic_factory->create(period, fsize, portn);
   //eventually, do: traffic_factory->destroy(&traffic_generator);
+
+  //Currently, the implementation does not use the factory method: XXX
   traffic_t *traffic_arg = (traffic_t *)malloc(sizeof(traffic_t));
   traffic_arg->period_ms = options->period_ms;
   traffic_arg->file_size_kb = options->file_size_kb;
@@ -43,7 +45,7 @@ int server(options_t *options) {
   traffic_arg->port = options->port;
   int retval = create_traffic(traffic_arg);
 
-  //Now start scheduler
+  /* Now start scheduler */
   while(1) {
     scheduler();
   }
