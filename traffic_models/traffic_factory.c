@@ -29,11 +29,11 @@ void periodic_task(void *p, unsigned int task_id) {
 
     traffic_t *arg = (traffic_t *) p;
     /* Get a random phase between 0 and T */
-    unsigned int phase_delay = rand() % arg->period;
+    unsigned int phase_delay = rand() % 1000*arg->period_ms;
 
-    create_task(send_file_task, p, STATE_WAITING, 1000*phase_delay);
+    create_task(send_file_task, p, STATE_WAITING, phase_delay);
 
-    delay(1000*arg->period, task_id);
+    delay(1000*arg->period_ms, task_id);
     return;
 }
 
@@ -43,7 +43,7 @@ void send_file_task(void *p, unsigned int task_id) {
     traffic_t *arg = (traffic_t *) p;
 
     file_t *file_info = (file_t *) malloc(sizeof(file_t));
-    file_info->file_size = arg->file_size;
+    file_info->file_size = 1024*arg->file_size_kb;
     file_info->max_chunk_size = 1500;
     file_info->remote_addr = arg->remote_ip;
     file_info->remote_port = arg->port;

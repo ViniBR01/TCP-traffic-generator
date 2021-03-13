@@ -90,12 +90,12 @@ int main(int argc, char *argv[]) {
         break;
       
       case 't':
-        options.period = (uint32_t )strtoul(optarg, NULL, 10);
+        options.period_ms = (uint32_t )strtoul(optarg, NULL, 10);
         /* todo: validate the input period XXX */
         break;
       
       case 'f':
-        options.file_size = (uint32_t )strtoul(optarg, NULL, 10);
+        options.file_size_kb = (uint32_t )strtoul(optarg, NULL, 10);
         /* todo: validate the input file size XXX */
         break;
 

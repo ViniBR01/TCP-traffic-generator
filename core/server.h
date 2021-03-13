@@ -11,8 +11,8 @@ typedef struct {
   //FILE       *configs;
   uint32_t      port;
   char         *remote_ip;
-  uint32_t      period;
-  uint32_t      file_size;
+  uint32_t      period_ms;
+  uint32_t      file_size_kb;
 } options_t;
 
 int server(options_t *options);

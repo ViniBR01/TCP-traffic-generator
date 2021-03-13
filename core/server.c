@@ -37,8 +37,8 @@ int server(options_t *options) {
   // ctx_t *traffic_generator = traffic_factory->create(period, fsize, portn);
   //eventually, do: traffic_factory->destroy(&traffic_generator);
   traffic_t *traffic_arg = (traffic_t *)malloc(sizeof(traffic_t));
-  traffic_arg->period = options->period;
-  traffic_arg->file_size = options->file_size;
+  traffic_arg->period_ms = options->period_ms;
+  traffic_arg->file_size_kb = options->file_size_kb;
   traffic_arg->remote_ip = options->remote_ip;
   traffic_arg->port = options->port;
   int retval = create_traffic(traffic_arg);

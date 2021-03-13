@@ -11,8 +11,8 @@
 typedef struct {
     int id;
     int model_type;
-    uint32_t period;
-    uint32_t file_size;
+    uint32_t period_ms;
+    uint32_t file_size_kb;
     char *remote_ip;
     uint32_t port;
 } traffic_t;
