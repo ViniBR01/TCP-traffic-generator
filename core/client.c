@@ -5,6 +5,7 @@
 #include <errno.h>
 
 #include "client.h"
+#include "scheduler.h"
 #include "open_server.h"
 
 int client(options_t *options) {
@@ -16,7 +17,13 @@ int client(options_t *options) {
     }
 
     /* XXX do needful stuff */
-    open_server(NULL, 0); // XXX fix me: put it inside a task.
-    
+    server_t *server_options = setup_server(8080);
+    create_task(check_connections, (void *) server_options, STATE_READY, -1);
+
+    /* Now start scheduler */
+    while(1) {
+        scheduler();
+    }
+
     return EXIT_SUCCESS;
 }
