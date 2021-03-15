@@ -13,6 +13,7 @@
 #include <fcntl.h>
 
 #include "open_server.h"
+#include "config_messages.h"
 
 /**************************************************/
 /* a few simple linked list functions             */
@@ -297,6 +298,23 @@ void check_connections(void *server_options, unsigned int task_id) {
                     dump(head, current->socket);
                 } else {
                     /* we got count bytes of data from the client */
+                    //XXX Here must access the type field and do a switch case statement to handle types
+                    uint8_t message_type = buf[0];
+                    switch (message_type)
+                    {
+                    case MSGTYPE_SETUP:
+                        printf("Received a config message.\n");
+                        printf("Message length = %d\n", ntohl(*(uint32_t *)(buf+1)));
+                        break;
+                    
+                    case MSGTYPE_DIGEST:
+                        printf("Received a DIGEST message.\n");
+                        printf("Message length = %d\n", ntohl(*(uint32_t *)(buf+1)));
+                        break;
+
+                    default:
+                        break;
+                    }
                     /* XXX finish-me: should have a status for file and check if transmissions ended */
                     
                     /* a complete message is received, print it out */
