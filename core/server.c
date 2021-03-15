@@ -30,7 +30,9 @@ int server(options_t *options) {
   /* XXX do server stuff */
 
   /* Send a silly message to the client */
-  send_silly_message();
+  char *silly_message = "Hello from server.\n";
+  message_t *message_arg = cook_message(MSGTYPE_SETUP, 20+4+1, silly_message);
+  create_task(send_message, message_arg, STATE_READY, -1);
 
   /* start all traffic model instances */
   // A traffic generator is resposible for creating files for transmissions
