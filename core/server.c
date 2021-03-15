@@ -31,7 +31,8 @@ int server(options_t *options) {
 
   /* Send a silly message to the client */
   char *silly_message = "Hello from server.\n";
-  message_t *message_arg = cook_message(MSGTYPE_SETUP, 20+4+1, silly_message);
+  message_t *message_arg = cook_message(MSGTYPE_SETUP, 20+4+1, silly_message, 
+                                        options->remote_ip, options->port);
   create_task(send_message, message_arg, STATE_READY, -1);
 
   /* start all traffic model instances */

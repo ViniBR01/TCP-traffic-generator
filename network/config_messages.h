@@ -12,7 +12,9 @@ typedef struct {
     uint8_t message_type;
     uint32_t message_length;
     char *buffer;
+    char *remote_ip;
+    uint32_t port;
 } message_t;
 
-message_t * cook_message(u_int8_t type, u_int32_t length, char *string_message);
+message_t * cook_message(u_int8_t type, u_int32_t length, char *string_message, char *remote_ip, uint32_t port);
 void send_message(void *cooked_message, unsigned int task_id);
