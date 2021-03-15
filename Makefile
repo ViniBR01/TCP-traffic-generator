@@ -19,7 +19,7 @@ CFLAGS= -I. \
 		-I./utils \
 
 SRC= 	main.c client.c server.c \
-		send_file.c open_server.c \
+		send_file.c open_server.c config_messages.c \
 		traffic_factory.c m_fixed_periodic.c \
 		scheduler.c log_file.c\
 		

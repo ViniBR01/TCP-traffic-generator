@@ -17,6 +17,7 @@
 #include "server.h"
 #include "scheduler.h"
 #include "traffic_factory.h"
+#include "config_messages.h"
 
 int server(options_t *options) {
   printf("Inside of the server function.\n");
@@ -27,6 +28,9 @@ int server(options_t *options) {
   }
 
   /* XXX do server stuff */
+
+  /* Send a silly message to the client */
+  send_silly_message();
 
   /* start all traffic model instances */
   // A traffic generator is resposible for creating files for transmissions
