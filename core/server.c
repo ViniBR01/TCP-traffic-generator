@@ -39,10 +39,13 @@ int server(options_t *options) {
 
   //Currently, the implementation does not use the factory method: XXX
   traffic_t *traffic_arg = (traffic_t *)malloc(sizeof(traffic_t));
+  traffic_arg->model_type = FIXED_PERIODIC;
+  traffic_arg->execution_time_sec = -1;
   traffic_arg->period_ms = options->period_ms;
   traffic_arg->file_size_kb = options->file_size_kb;
   traffic_arg->remote_ip = options->remote_ip;
   traffic_arg->port = options->port;
+
   int retval = create_traffic(traffic_arg);
 
   /* Now start scheduler */
