@@ -17,23 +17,31 @@
 #include "config_messages.h"
 #include "scheduler.h"
 
-message_t * cook_message(u_int8_t type, u_int32_t length, char *string_message, char *remote_ip, uint32_t port) {
+int serialize_setup_message(setup_t *setup_message, char *buffer);
+int reconstruct_setup_message(char* buffer, setup_t *setup_message);
+
+message_t * cook_setup_message(u_int8_t type, setup_t setup_configs, 
+                            char *remote_ip, uint32_t port) {
     message_t *message_arg = (message_t *) malloc(sizeof(message_t));
     message_arg->message_type = type;
-    message_arg->message_length = length;
-    message_arg->buffer = (char *)malloc(length * sizeof(char));
+    int message_size = 1 + 4 + sizeof(setup_t) + 
+                        setup_configs.number_of_models * sizeof(single_model_t);
+    message_arg->message_length = message_size; //XXX fix-me: later
+    message_arg->buffer = (char *)malloc(message_size * sizeof(char));
     if(!message_arg->buffer) {
         perror("error allocating buffer for config message");
         exit(EXIT_FAILURE);
         /* NOTREACHED */
     }
-    message_arg->remote_ip = remote_ip;
+    message_arg->remote_ip = (char *) malloc(16);
+    strcpy(message_arg->remote_ip, remote_ip);
     message_arg->port = port;
 
-    //XX Here, fill buffer with silly message and header
+    //XX Here, fill buffer with setup message
     message_arg->buffer[0] = type;
-    *(uint32_t *) (message_arg->buffer + 1) = (uint32_t) htonl(length);
-    memcpy(message_arg->buffer+5, string_message, length-5);
+    *(uint32_t *) (message_arg->buffer + 1) = (uint32_t) htonl(message_size);
+    //XXX must use a function to serialize the control structs to be sent
+    serialize_setup_message(&setup_configs, message_arg->buffer+5);
 
     return message_arg;
 }
@@ -107,4 +115,29 @@ void send_message(void *cooked_message, unsigned int task_id) {
 
     kill_task(task_id);
     return;
+}
+
+//XXX Fix me: the following functions only work for a single model!!!
+int serialize_setup_message(setup_t *setup_message, char *buffer) {
+    //must take all the content of setup message and add it to buffer
+    *(int *) (buffer+0) = (int) setup_message->number_of_models;
+    for (int i=0; i<setup_message->number_of_models; i++) {
+        *(int *) (buffer+4+i*24) = (int) htonl(setup_message->model_array->model_type);
+        *(int *) (buffer+8+i*24) = (int) htonl(setup_message->model_array->execution_time);
+        *(uint32_t *) (buffer+12+i*24) = (uint32_t) htonl(setup_message->model_array->period_ms);
+        *(uint32_t *) (buffer+16+i*24) = (uint32_t) htonl(setup_message->model_array->file_size_kb);
+        *(uint32_t *) (buffer+20+i*24) = (uint32_t) htonl(setup_message->model_array->port);
+    }
+    return EXIT_SUCCESS;
+}
+int reconstruct_setup_message(char* buffer, setup_t *setup_message) {
+    setup_message->number_of_models = (int) ntohl(*(int *)(buffer+0));
+    for (int i=0; i<setup_message->number_of_models; i++) {
+        setup_message->model_array->model_type = (int) ntohl(*(int *)(buffer+4+i*24));
+        setup_message->model_array->execution_time = (int) ntohl(*(int *)(buffer+8+i*24));
+        setup_message->model_array->period_ms = (uint32_t) ntohl(*(uint32_t *)(buffer+12+i*24));
+        setup_message->model_array->file_size_kb = (uint32_t) ntohl(*(uint32_t *)(buffer+16+i*24));
+        setup_message->model_array->port = (uint32_t) ntohl(*(uint32_t *)(buffer+20+i*24));
+    }
+    return EXIT_SUCCESS;
 }

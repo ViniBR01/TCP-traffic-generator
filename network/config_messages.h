@@ -19,11 +19,11 @@ typedef struct {
 
 /* Structs to exchange the configuration setup parameters */
 typedef struct {
-    uint8_t model_type;
+    int model_type;
     int execution_time;
-    int period;
-    int file_size;
-    int port;
+    uint32_t period_ms;
+    uint32_t file_size_kb;
+    uint32_t port;
 } single_model_t;
 
 typedef struct {
@@ -31,5 +31,6 @@ typedef struct {
     single_model_t *model_array;
 } setup_t;
 
-message_t * cook_message(u_int8_t type, u_int32_t length, char *string_message, char *remote_ip, uint32_t port);
+message_t * cook_setup_message(u_int8_t type, setup_t setup_configs, 
+                            char *remote_ip, uint32_t port);
 void send_message(void *cooked_message, unsigned int task_id);

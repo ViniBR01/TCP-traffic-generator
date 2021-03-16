@@ -4,6 +4,7 @@
 #define _SERVER_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef struct {
   int           verbose;

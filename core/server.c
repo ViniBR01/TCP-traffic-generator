@@ -29,9 +29,20 @@ int server(options_t *options) {
 
   /* XXX do server stuff */
 
+  /* Prepare the setup configuration with the structs from config_messages.h */
+  single_model_t model1;
+  model1.model_type = FIXED_PERIODIC;
+  model1.execution_time = 10;
+  model1.period_ms = options->period_ms;
+  model1.file_size_kb = options->file_size_kb;
+  model1.port = options->port;
+
+  setup_t configs;
+  configs.number_of_models = 1;
+  configs.model_array = &model1;
+
   /* Send a silly message to the client */
-  char *silly_message = "Hello from server.\n";
-  message_t *message_arg = cook_message(MSGTYPE_SETUP, 20+4+1, silly_message, 
+  message_t *message_arg = cook_setup_message(MSGTYPE_SETUP, configs, 
                                         options->remote_ip, options->port);
   create_task(send_message, message_arg, STATE_READY, -1);
 
