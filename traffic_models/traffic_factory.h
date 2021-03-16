@@ -5,8 +5,8 @@
 
 #include <stdio.h>
 
-#define FIXED_PERIODIC 0
-//#define POISSON_ARRIVALS 1 //and so on...
+#define FIXED_PERIODIC 1
+//#define POISSON_ARRIVALS 2 //and so on...
 
 typedef struct {
     int id;

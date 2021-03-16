@@ -14,6 +14,7 @@
 
 #include "open_server.h"
 #include "config_messages.h"
+#include "traffic_factory.h"
 
 /**************************************************/
 /* a few simple linked list functions             */
@@ -304,7 +305,21 @@ void check_connections(void *server_options, unsigned int task_id) {
                     {
                     case MSGTYPE_SETUP:
                         printf("Received a config message.\n");
-                        printf("Message length = %d\n", ntohl(*(uint32_t *)(buf+1)));
+                        // printf("Message length = %d\n", ntohl(*(uint32_t *)(buf+1)));
+                        setup_t *setup_configs = (setup_t *) malloc(sizeof(setup_t));
+                        setup_configs->model_array = (single_model_t *) malloc(sizeof(single_model_t));
+                        reconstruct_setup_message(buf+5, setup_configs);
+
+                        /* Start traffic based on the setup config message */
+                        traffic_t *traffic_arg = (traffic_t *)malloc(sizeof(traffic_t));
+                        traffic_arg->model_type = setup_configs->model_array->model_type;
+                        traffic_arg->execution_time_sec = setup_configs->model_array->execution_time;
+                        traffic_arg->period_ms = setup_configs->model_array->period_ms;
+                        traffic_arg->file_size_kb = setup_configs->model_array->file_size_kb;
+                        traffic_arg->port = setup_configs->model_array->port;
+                        traffic_arg->remote_ip = inet_ntoa(current->client_addr.sin_addr);
+
+                        int retval = create_traffic(traffic_arg);
                         break;
                     
                     case MSGTYPE_DIGEST:

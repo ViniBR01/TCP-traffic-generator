@@ -27,10 +27,11 @@ typedef struct {
 } single_model_t;
 
 typedef struct {
-    int number_of_models;
+    uint32_t number_of_models;
     single_model_t *model_array;
 } setup_t;
 
 message_t * cook_setup_message(u_int8_t type, setup_t setup_configs, 
                             char *remote_ip, uint32_t port);
 void send_message(void *cooked_message, unsigned int task_id);
+int reconstruct_setup_message(char* buffer, setup_t *setup_message);

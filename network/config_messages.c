@@ -120,7 +120,7 @@ void send_message(void *cooked_message, unsigned int task_id) {
 //XXX Fix me: the following functions only work for a single model!!!
 int serialize_setup_message(setup_t *setup_message, char *buffer) {
     //must take all the content of setup message and add it to buffer
-    *(int *) (buffer+0) = (int) setup_message->number_of_models;
+    *(uint32_t *) (buffer+0) = (uint32_t) htonl(setup_message->number_of_models);
     for (int i=0; i<setup_message->number_of_models; i++) {
         *(int *) (buffer+4+i*24) = (int) htonl(setup_message->model_array->model_type);
         *(int *) (buffer+8+i*24) = (int) htonl(setup_message->model_array->execution_time);
@@ -131,8 +131,9 @@ int serialize_setup_message(setup_t *setup_message, char *buffer) {
     return EXIT_SUCCESS;
 }
 int reconstruct_setup_message(char* buffer, setup_t *setup_message) {
-    setup_message->number_of_models = (int) ntohl(*(int *)(buffer+0));
-    for (int i=0; i<setup_message->number_of_models; i++) {
+    uint32_t number_of_models = (uint32_t) ntohl(*(uint32_t *)(buffer+0));
+    setup_message->number_of_models = number_of_models;
+    for (int i=0; i<number_of_models; i++) {
         setup_message->model_array->model_type = (int) ntohl(*(int *)(buffer+4+i*24));
         setup_message->model_array->execution_time = (int) ntohl(*(int *)(buffer+8+i*24));
         setup_message->model_array->period_ms = (uint32_t) ntohl(*(uint32_t *)(buffer+12+i*24));
