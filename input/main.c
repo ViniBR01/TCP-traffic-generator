@@ -28,7 +28,7 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 
 /* 2 defines */
 //colon mandates an argument in OPTSTR; W is reserved for long options
-#define OPTSTR "vp:i:t:f:h"
+#define OPTSTR "vp:i:t:f:l:m:o:h"
 #define USAGE_FMT  "%s [-v] [-i remoteIP] [-p port] [-t period_in_ms] [-f filesize_in_kB] [-l length_in_sec] [-m mode_DL/UL] [-o output_file_name] [-h]\n"
 #define ERR_CLIENT "client function blew up"
 #define ERR_SERVER "server function blew up"
