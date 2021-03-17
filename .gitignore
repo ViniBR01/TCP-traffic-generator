@@ -60,3 +60,7 @@ dkms.conf
 # Examples and tests
 example/
 test_*
+test
+
+# Output logs
+*.txt
