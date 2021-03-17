@@ -29,12 +29,10 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 /* 2 defines */
 //colon mandates an argument in OPTSTR; W is reserved for long options
 #define OPTSTR "vp:i:t:f:h"
-#define USAGE_FMT  "%s [-v] [-i remoteIP] [-p port] [-t period] [-f filesize] [-h]\n"
-//#define ERR_FOPEN_INPUT  "fopen(input, r) XXX"
-//#define ERR_FOPEN_OUTPUT "fopen(output, w) XXX"
+#define USAGE_FMT  "%s [-v] [-i remoteIP] [-p port] [-t period_in_ms] [-f filesize_in_kB] [-l length_in_sec] [-m mode_DL/UL] [-o output_file_name] [-h]\n"
 #define ERR_CLIENT "client function blew up"
 #define ERR_SERVER "server function blew up"
-#define DEFAULT_PROGNAME "start_server"
+#define DEFAULT_PROGNAME "start_client"
 #define TCP_OP_INVALID 0
 #define TCP_OP_SERVER 1
 #define TCP_OP_CLIENT 2
@@ -51,7 +49,6 @@ extern int opterr, optind;
 /* 6 ancillary function prototypes */
 void usage(char *progname, int opt);
 int pick_operation(char *);
-int do_the_needful(options_t *options);
 
 int main(int argc, char *argv[]) {
   /* 7 command-line parsing */
@@ -65,19 +62,12 @@ int main(int argc, char *argv[]) {
   }
 
   int opt;
-  options_t options = { 0, 8080, "127.0.0.1", 1000, 10 }; //default values
+  options_t options = { 0, 8080, "127.0.0.1", 1000, 10, 10, MODE_SINGLE_DL, "download-times.txt" }; //default values
 
   opterr = 0; //disables getopt from emmiting a ?
 
   while ((opt = getopt(argc, argv, OPTSTR)) != EOF) {
     switch(opt) {
-      //case 'c':
-        //   if (!(options.configs = fopen(optarg, "r")) ){
-        //     perror(ERR_FOPEN_INPUT);
-        //     exit(EXIT_FAILURE);
-        //     /* NOTREACHED */
-        //   }
-        //break
       
       case 'p':
         options.port = (uint32_t )strtoul(optarg, NULL, 10);
@@ -98,12 +88,30 @@ int main(int argc, char *argv[]) {
         options.file_size_kb = (uint32_t )strtoul(optarg, NULL, 10);
         /* todo: validate the input file size XXX */
         break;
+      
+      case 'l':
+        options.length_sec = (int )strtol(optarg, NULL, 10);
+        /* todo: validate the input file size XXX */
+        break;
+      
+      case 'm':
+        options.mode = (uint8_t )strtoul(optarg, NULL, 10);
+        /* todo: validate the input file size XXX */
+        break;
+
+      case 'o':
+        options.output_name = optarg;
+        /* todo: validate the input file size XXX */
+        break;
 
       case 'v':
         options.verbose += 1;
         break;
 
       case 'h':
+        fprintf(stderr, USAGE_FMT, basename(argv[0]));
+        exit(EXIT_SUCCESS);
+        /* NOTREACHED */
       default:
         usage(basename(argv[0]), opt);
         /* NOTREACHED */
@@ -153,7 +161,7 @@ void usage(char *progname, int opt) {
     exit(EXIT_FAILURE);
   }
   
-  fprintf(stderr, "usage: %s [-i input] [-o output] [-V]\n", basename(progname));
+  fprintf(stderr, USAGE_FMT, basename(progname));
   if (opt != '?') {
     fprintf(stderr, "unknown option: \"%c\"\n", opt);
   }
