@@ -13,6 +13,7 @@ typedef struct {
     int model_type;
     int execution_time_sec;
     uint32_t period_ms;
+    int execution_count;
     uint32_t file_size_kb;
     char *remote_ip;
     uint32_t port;

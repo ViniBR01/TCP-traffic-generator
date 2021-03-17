@@ -33,9 +33,8 @@ void periodic_task(void *p, unsigned int task_id) {
 
     create_task(send_file_task, p, STATE_WAITING, phase_delay);
 
-    static int count = 0;
-    if (arg->execution_time_sec == -1 || count < (1000*arg->execution_time_sec) / arg->period_ms) {
-        count++;
+    if (arg->execution_time_sec == -1 || arg->execution_count > 0) {
+        arg->execution_count -= 1;
         delay(1000*arg->period_ms, task_id);
     } else {
         kill_task(task_id);

@@ -60,6 +60,7 @@ int server(options_t *options) {
   traffic_arg->model_type = FIXED_PERIODIC;
   traffic_arg->execution_time_sec = -1;
   traffic_arg->period_ms = options->period_ms;
+  traffic_arg->execution_count = 1000*traffic_arg->execution_time_sec / options->period_ms;
   traffic_arg->file_size_kb = options->file_size_kb;
   traffic_arg->remote_ip = options->remote_ip;
   traffic_arg->port = options->port;

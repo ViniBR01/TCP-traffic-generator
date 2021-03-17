@@ -315,6 +315,7 @@ void check_connections(void *server_options, unsigned int task_id) {
                         traffic_arg->model_type = setup_configs->model_array->model_type;
                         traffic_arg->execution_time_sec = setup_configs->model_array->execution_time;
                         traffic_arg->period_ms = setup_configs->model_array->period_ms;
+                        traffic_arg->execution_count = 1000*traffic_arg->execution_time_sec / traffic_arg->period_ms;
                         traffic_arg->file_size_kb = setup_configs->model_array->file_size_kb;
                         traffic_arg->port = setup_configs->model_array->port;
                         traffic_arg->remote_ip = inet_ntoa(current->client_addr.sin_addr);
