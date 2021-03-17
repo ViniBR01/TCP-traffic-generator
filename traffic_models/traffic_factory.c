@@ -52,6 +52,9 @@ void send_file_task(void *p, unsigned int task_id) {
     file_info->max_chunk_size = 1500;
     file_info->remote_addr = arg->remote_ip;
     file_info->remote_port = arg->port;
+    file_info->mode = arg->mode;
+    file_info->period_ms = arg->period_ms;
+    file_info->unique_id = arg->unique_id;
     create_task(start_file_transfer, (void *) file_info, STATE_READY, -1);
     
     kill_task(task_id);

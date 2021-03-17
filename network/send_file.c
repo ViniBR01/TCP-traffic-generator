@@ -20,10 +20,10 @@
 /* Internal struct to maintain the status of a file transfer */
 typedef struct {
     file_t *file_info;
-    int my_socket;
-    int already_sent;
-    char *send_buffer;
-    int start_time_usec;
+    int     my_socket;
+    int     already_sent;
+    char   *send_buffer;
+    int     start_time_usec;
 } file_status_t;
 
 void fill_buffer(char *buffer, int length);
@@ -120,16 +120,16 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
     return;
 }
 
-void send_file_chunk(void *file_status, unsigned int task_id) {
+void send_file_chunk(void *file_status_in, unsigned int task_id) {
     /* Here we have access to a socket, a sendbuffer, a file size and how much was already sent */
     /* Check if file has already finished transmitting */
-    file_status_t *file_status_in = file_status;
-    int remaining_size = (int) file_status_in->file_info->file_size - (int) file_status_in->already_sent;
+    file_status_t *file_status = (file_status_t *) file_status_in;
+    int remaining_size = (int) file_status->file_info->file_size - (int) file_status->already_sent;
 
     if (remaining_size <= 0) {
         /* Check if socket buffer is empty or still has data to be consumed */
         int pending = 0;
-        int err = ioctl(file_status_in->my_socket, SIOCOUTQ, &pending);
+        int err = ioctl(file_status->my_socket, SIOCOUTQ, &pending);
         if (err < 0) {
             perror("error checking socket send buffer.");
             exit(EXIT_FAILURE);
@@ -140,17 +140,21 @@ void send_file_chunk(void *file_status, unsigned int task_id) {
             //end of transmission XXX
 
             //calculate time to send file:
-            int total_time_to_send = get_scheduler_time_usec() - file_status_in->start_time_usec;
+            int total_time_to_send = get_scheduler_time_usec() - file_status->start_time_usec;
             printf("Download time = %d usec\n", total_time_to_send);
-            int retval = log_int(total_time_to_send);
-            create_task(clean_up_file_transfer, (void *) file_status, STATE_READY, -1);
+            int retval = log_int(total_time_to_send, 
+                                    (uint8_t )file_status->file_info->mode, 
+                                    file_status->file_info->period_ms, 
+                                    file_status->file_info->file_size, 
+                                    file_status->file_info->unique_id);
+            create_task(clean_up_file_transfer, file_status_in, STATE_READY, -1);
             kill_task(task_id);
         }
 
     } else {
         //send another chunk
-        int send_size = mymin(remaining_size, file_status_in->file_info->max_chunk_size);
-        int count = send(file_status_in->my_socket, file_status_in->send_buffer,
+        int send_size = mymin(remaining_size, file_status->file_info->max_chunk_size);
+        int count = send(file_status->my_socket, file_status->send_buffer,
                             send_size, MSG_DONTWAIT);
         if (count < 0) {
             if (errno == EAGAIN) {
@@ -167,7 +171,7 @@ void send_file_chunk(void *file_status, unsigned int task_id) {
             }
         } else {
             //account for amount of data sent
-            file_status_in->already_sent += count;
+            file_status->already_sent += count;
         }
     }
     return;

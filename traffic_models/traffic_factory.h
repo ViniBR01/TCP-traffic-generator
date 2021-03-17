@@ -9,14 +9,16 @@
 //#define POISSON_ARRIVALS 2 //and so on...
 
 typedef struct {
-    int id;
-    int model_type;
-    int execution_time_sec;
-    uint32_t period_ms;
-    int execution_count;
-    uint32_t file_size_kb;
-    char *remote_ip;
-    uint32_t port;
+    int         id;
+    int         model_type;
+    int         execution_time_sec;
+    uint32_t    period_ms;
+    int         execution_count;
+    uint32_t    file_size_kb;
+    char       *remote_ip;
+    uint32_t    port;
+    uint32_t    mode;
+    uint32_t    unique_id;
 } traffic_t;
 
 int create_traffic(traffic_t* traffic_parameters);

@@ -31,7 +31,7 @@ int log_int(int val, u_int8_t mode, u_int32_t period, u_int32_t filesize, u_int6
     strcat(filename, temp);
     strcat(filename, "ms");
     
-    itoa(filesize, temp, 10);
+    itoa(filesize/1024, temp, 10);
     strcat(filename, "-");
     strcat(filename, temp);
     strcat(filename, "kB");
