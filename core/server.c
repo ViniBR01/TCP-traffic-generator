@@ -18,6 +18,7 @@
 #include "scheduler.h"
 #include "traffic_factory.h"
 #include "config_messages.h"
+#include "open_server.h"
 
 int server(options_t *options) {
   printf("Inside of the server function.\n");
@@ -43,10 +44,15 @@ int server(options_t *options) {
       configs.number_of_models = 1;
       configs.model_array = &model1;
 
-      /* Send a silly message to the client */
+      /* Send a setup message to the client */
       message_t *message_arg = cook_setup_message(MSGTYPE_SETUP, configs, 
                                             options->remote_ip, options->port);
       create_task(send_message, message_arg, STATE_READY, -1);
+
+      /* Start a server to receive incoming messages */
+      server_t *server_options = setup_server(8080);
+      create_task(check_connections, (void *) server_options, STATE_READY, -1);
+
       break;
     
     case MODE_SINGLE_DL: ;
