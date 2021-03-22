@@ -135,6 +135,7 @@ void send_file_chunk(void *file_status_in, unsigned int task_id) {
             exit(EXIT_FAILURE);
             /* NOTREACHED */
         }
+        printf("\tPending data = %d\n", pending);
 
         if (pending == 0) {
             //end of transmission XXX
