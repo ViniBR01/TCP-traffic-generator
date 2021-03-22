@@ -27,6 +27,13 @@ int verbosity_int(char *message, int parameter1, u_int32_t message_level) {
     return EXIT_SUCCESS;
 }
 
+int verbosity_string(char *message, char *parameter1, u_int32_t message_level) {
+    if (level >= message_level) {
+        printf(message, parameter1);
+    }
+    return EXIT_SUCCESS;
+}
+
 u_int32_t get_verbosity() {
     return level;
 }

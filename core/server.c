@@ -33,6 +33,8 @@ int server(options_t *options) {
   switch (options->mode) {
   
     case MODE_SINGLE_UL: ;
+      verbosity("Selected upload mode with single TCP periodic flow.\n", 2);
+
       /* Prepare the setup configuration with the structs from config_messages.h */
       single_model_t model1;
       model1.model_type = FIXED_PERIODIC;
@@ -57,6 +59,8 @@ int server(options_t *options) {
       break;
     
     case MODE_SINGLE_DL: ;
+      verbosity("Selected download mode with single TCP periodic flow.\n", 2);
+
       /* start all traffic model instances */
       // A traffic generator is resposible for creating files for transmissions
       //They provide interface to create a traffic generation task. This task

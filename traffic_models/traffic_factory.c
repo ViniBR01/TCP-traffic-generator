@@ -13,6 +13,7 @@
 //#include "m_fixed_periodic.h"
 #include "scheduler.h"
 #include "send_file.h"
+#include "verbosity.h"
 
 void periodic_task(void *p, unsigned int task_id);
 void send_file_task(void *p, unsigned int task_id);
@@ -24,6 +25,8 @@ int create_traffic(traffic_t *traffic_parameters) {
 }
 
 void periodic_task(void *p, unsigned int task_id) {
+    verbosity("Inside of the periodic_task function.\n", 3);
+
     //int time = get_scheduler_time_usec();
     //printf("t=%4.d ms | Executing the periodic task with id: %d.\n", time, task_id);
 
@@ -43,6 +46,8 @@ void periodic_task(void *p, unsigned int task_id) {
 }
 
 void send_file_task(void *p, unsigned int task_id) {
+    verbosity("Inside of the send_file_task function.\n", 3);
+
     //int time = get_scheduler_time_usec();
     //printf("t=%4.d ms | Send a file starting now. File_size=%u | This task id is: %d\n", time, arg->fsize, task_id);
     traffic_t *arg = (traffic_t *) p;

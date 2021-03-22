@@ -31,6 +31,8 @@ void fill_buffer(char *buffer, int length);
 int mymin(int num1, int num2);
 
 void start_file_transfer(void *file_info_in, unsigned int task_id){
+    verbosity("Inside of the start_file_transfer function.\n", 3);
+
     file_t *file_info = (file_t *) file_info_in;
     file_status_t *file_status = 
         (file_status_t *) malloc(sizeof(file_status_t));
@@ -122,6 +124,8 @@ void start_file_transfer(void *file_info_in, unsigned int task_id){
 }
 
 void send_file_chunk(void *file_status_in, unsigned int task_id) {
+    verbosity("Inside of the send_file_chunk function.\n", 3);
+
     /* Here we have access to a socket, a sendbuffer, a file size and how much was already sent */
     /* Check if file has already finished transmitting */
     file_status_t *file_status = (file_status_t *) file_status_in;
@@ -181,6 +185,7 @@ void send_file_chunk(void *file_status_in, unsigned int task_id) {
 }
 
 void clean_up_file_transfer(void *file_status, unsigned int task_id) {
+    verbosity("Inside of the clean_up_file_transfer function.\n", 3);
 
     file_status_t *file_status_in = file_status;
     

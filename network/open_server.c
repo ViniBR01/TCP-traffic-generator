@@ -54,6 +54,8 @@ void add(struct node *head, int socket, struct sockaddr_in addr) {
 }
 
 server_t * setup_server(unsigned int port) {
+    verbosity("Inside of the setup_server function.\n", 3);
+
     server_t *server_options = (server_t *) malloc(sizeof(server_t));
 
     /* socket and option variables */
@@ -136,6 +138,7 @@ server_t * setup_server(unsigned int port) {
 }
 
 void check_connections(void *server_options, unsigned int task_id) {
+    //verbosity("Inside of the check_connections function.\n", 3);
     
     server_t *server_options_in = (server_t *) server_options;
     int sock = server_options_in->socket;
@@ -239,8 +242,8 @@ void check_connections(void *server_options, unsigned int task_id) {
 
             /* the connection is made, everything is ready */
             /* let's see who's connecting to us */
-            printf("Accepted connection. Client IP address is: %s\n",
-                inet_ntoa(addr.sin_addr));
+            verbosity_string("Accepted connection. Client IP address is: %s\n",
+                inet_ntoa(addr.sin_addr), 2);
 
             /* remember this client connection in our linked list */
             add(head, new_sock, addr);
@@ -290,7 +293,8 @@ void check_connections(void *server_options, unsigned int task_id) {
                 if (count <= 0) {
                     /* something is wrong */
                     if (count == 0) {
-                        printf("Client closed connection. Client IP address is: %s\n", inet_ntoa(current->client_addr.sin_addr));
+                        verbosity_string("Client closed connection. Client IP address is: %s\n", 
+                            inet_ntoa(current->client_addr.sin_addr), 2);
                     } else {
                         perror("error receiving from a client");
                     }

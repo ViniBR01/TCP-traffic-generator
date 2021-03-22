@@ -23,6 +23,8 @@ int reconstruct_setup_message(char* buffer, setup_t *setup_message);
 
 message_t * cook_setup_message(u_int8_t type, setup_t setup_configs, 
                             char *remote_ip, uint32_t port) {
+    verbosity("Inside of the cook_setup_message function.\n", 3);
+
     message_t *message_arg = (message_t *) malloc(sizeof(message_t));
     message_arg->message_type = type;
     int message_size = 1 + 4 + sizeof(setup_t) + 
@@ -48,6 +50,7 @@ message_t * cook_setup_message(u_int8_t type, setup_t setup_configs,
 }
 
 void send_message(void *cooked_message, unsigned int task_id) {
+    verbosity("Inside of the send_message function.\n", 3);
 
     message_t *message_arg = (message_t *) cooked_message;
     //XXX Write code to open a socket, connect to remote host, and send the contents of the buffer
