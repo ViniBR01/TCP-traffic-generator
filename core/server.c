@@ -19,9 +19,10 @@
 #include "traffic_factory.h"
 #include "config_messages.h"
 #include "open_server.h"
+#include "verbosity.h"
 
 int server(options_t *options) {
-  printf("Inside of the server function.\n");
+  verbosity("Inside of the server function.\n", 3);
 
   if (!options) {
     errno = EINVAL;

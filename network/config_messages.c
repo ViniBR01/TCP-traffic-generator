@@ -16,6 +16,7 @@
 
 #include "config_messages.h"
 #include "scheduler.h"
+#include "verbosity.h"
 
 int serialize_setup_message(setup_t *setup_message, char *buffer);
 int reconstruct_setup_message(char* buffer, setup_t *setup_message);

@@ -25,11 +25,12 @@ how to struct multi-file c: https://opensource.com/article/19/7/structure-multi-
 #include "main.h"
 #include "client.h"
 #include "server.h"
+#include "verbosity.h"
 
 /* 2 defines */
 //colon mandates an argument in OPTSTR; W is reserved for long options
-#define OPTSTR "vp:i:t:f:l:m:o:h"
-#define USAGE_FMT  "%s [-v] [-i remoteIP] [-p port] [-t period_in_ms] [-f filesize_in_kB] [-l length_in_sec] [-m mode_DL/UL] [-o output_file_name] [-h]\n"
+#define OPTSTR "v:p:i:t:f:l:m:o:h"
+#define USAGE_FMT  "%s [-i remoteIP] [-p port] [-t period_in_ms] [-f filesize_in_kB] [-l length_in_sec] [-m mode_DL/UL] [-o output_file_name] [-v level] [-h]\n"
 #define ERR_CLIENT "client function blew up"
 #define ERR_SERVER "server function blew up"
 #define DEFAULT_PROGNAME "start_client"
@@ -51,6 +52,9 @@ void usage(char *progname, int opt);
 int pick_operation(char *);
 
 int main(int argc, char *argv[]) {
+  /* Set default verbosity */
+  set_verbosity(1);
+
   /* 7 command-line parsing */
   int tcp_op = TCP_OP_INVALID;
 
@@ -62,7 +66,7 @@ int main(int argc, char *argv[]) {
   }
 
   int opt;
-  options_t options = { 0, 8080, "127.0.0.1", 1000, 10, 10, MODE_SINGLE_DL, "download-times.txt" }; //default values
+  options_t options = { 8080, "127.0.0.1", 1000, 10, 10, MODE_SINGLE_DL, "download-times.txt" }; //default values
 
   opterr = 0; //disables getopt from emmiting a ?
 
@@ -105,7 +109,7 @@ int main(int argc, char *argv[]) {
         break;
 
       case 'v':
-        options.verbose += 1;
+        set_verbosity((uint32_t )strtoul(optarg, NULL, 10));
         break;
 
       case 'h':
@@ -122,7 +126,7 @@ int main(int argc, char *argv[]) {
   switch(tcp_op) {
     case TCP_OP_CLIENT:
       /* CALL THE FUNCTIONS RELATED TO CLIENT EXECUTION XXX */
-      printf("Entering client mode operation.\n");
+      verbosity("Entering client mode operation.\n", 1);
 
       if (client(&options) != EXIT_SUCCESS) {
         perror(ERR_CLIENT);
@@ -134,7 +138,7 @@ int main(int argc, char *argv[]) {
     
     case TCP_OP_SERVER:
       /* CALL THE FUNCTIONS RELATED TO SERVER EXECUTION XXX */
-      printf("Entering server mode operation.\n");
+      verbosity("Entering server mode operation.\n", 1);
 
       if (server(&options) != EXIT_SUCCESS) {
         perror(ERR_SERVER);

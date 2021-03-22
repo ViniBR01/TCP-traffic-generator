@@ -16,6 +16,7 @@
 #include "send_file.h"
 #include "scheduler.h"
 #include "log_file.h"
+#include "verbosity.h"
 
 /* Internal struct to maintain the status of a file transfer */
 typedef struct {
@@ -135,14 +136,15 @@ void send_file_chunk(void *file_status_in, unsigned int task_id) {
             exit(EXIT_FAILURE);
             /* NOTREACHED */
         }
-        printf("\tPending data = %d\n", pending);
+
+        verbosity_int("\tPending data = %d\n", pending, 5);
 
         if (pending == 0) {
             //end of transmission XXX
 
             //calculate time to send file:
             int total_time_to_send = get_scheduler_time_usec() - file_status->start_time_usec;
-            printf("Download time = %d usec\n", total_time_to_send);
+            verbosity_int("Download time = %d usec\n", total_time_to_send, 2);
             int retval = log_int(total_time_to_send, 
                                     (uint8_t )file_status->file_info->mode, 
                                     file_status->file_info->period_ms, 

@@ -10,7 +10,6 @@
 #define MODE_SINGLE_UL 2
 
 typedef struct {
-  int           verbose;
   uint32_t      port;
   char         *remote_ip;
   uint32_t      period_ms;

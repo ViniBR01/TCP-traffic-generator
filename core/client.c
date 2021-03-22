@@ -7,9 +7,10 @@
 #include "client.h"
 #include "scheduler.h"
 #include "open_server.h"
+#include "verbosity.h"
 
 int client(options_t *options) {
-    printf("Inside of the client function.\n");
+    verbosity("Inside of the client function.\n", 3);
 
     if (!options) {
         errno = EINVAL;

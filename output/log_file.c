@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "log_file.h"
+#include "verbosity.h"
 
 char* itoa(int value, char* result, int base);
 

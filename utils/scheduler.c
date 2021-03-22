@@ -14,6 +14,7 @@
 #include <sys/wait.h>
 
 #include "scheduler.h"
+#include "verbosity.h"
 
 #define MIN_TCB_SIZE 10
 #define ERR_INVALID_STATE "The task state was invalid"

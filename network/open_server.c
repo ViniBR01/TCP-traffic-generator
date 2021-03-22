@@ -15,6 +15,7 @@
 #include "open_server.h"
 #include "config_messages.h"
 #include "traffic_factory.h"
+#include "verbosity.h"
 
 /**************************************************/
 /* a few simple linked list functions             */
