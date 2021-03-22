@@ -138,7 +138,7 @@ server_t * setup_server(unsigned int port) {
 }
 
 void check_connections(void *server_options, unsigned int task_id) {
-    //verbosity("Inside of the check_connections function.\n", 3);
+    //verbosity("Inside of the check_connections function.\n", 5);
     
     server_t *server_options_in = (server_t *) server_options;
     int sock = server_options_in->socket;
@@ -186,7 +186,7 @@ void check_connections(void *server_options, unsigned int task_id) {
         }
     }
 
-    time_out.tv_usec = 100000; /* 1-tenth of a second timeout */
+    time_out.tv_usec = 0; /* 1-tenth of a second timeout */
     time_out.tv_sec = 0;
 
     /* invoke select, make sure to pass max+1 !!! */
@@ -199,6 +199,7 @@ void check_connections(void *server_options, unsigned int task_id) {
 
     if (select_retval == 0) {
         /* no descriptor ready, timeout happened */
+        //verbosity("End of the check_connections function.\n", 5);
         return;
     }
     
@@ -345,4 +346,6 @@ void check_connections(void *server_options, unsigned int task_id) {
             }
         }
     }
+    //verbosity("End of the check_connections function.\n", 5);
+    return;
 }
