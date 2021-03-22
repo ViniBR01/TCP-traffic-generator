@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 int set_verbosity(u_int32_t new_level);
-int verbosity(char *message, uint32_t message_level);
+int verbosity(char *message, u_int32_t message_level);
 u_int32_t get_verbosity();
 
 #endif  /* _VERBOSITY_H */

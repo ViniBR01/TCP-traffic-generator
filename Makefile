@@ -21,7 +21,7 @@ CFLAGS= -I. \
 SRC= 	main.c client.c server.c \
 		send_file.c open_server.c config_messages.c \
 		traffic_factory.c m_fixed_periodic.c \
-		scheduler.c log_file.c\
+		scheduler.c verbosity.c log_file.c\
 		
 _OBJ= $(SRC:.c=.o)
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))

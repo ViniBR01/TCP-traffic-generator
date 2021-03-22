@@ -13,16 +13,13 @@ int set_verbosity(u_int32_t new_level) {
     return EXIT_SUCCESS;
 }
 
-int verbosity(char *message, uint32_t message_level) {
+int verbosity(char *message, u_int32_t message_level) {
     if (level >= message_level) {
         printf(message);
-        return EXIT_SUCCESS;
-    } else {
-        return EXIT_FAILURE;
     }
-    
+    return EXIT_SUCCESS;
 }
 
-u_int32_t get_verbosity {
+u_int32_t get_verbosity() {
     return level;
 }
