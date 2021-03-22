@@ -300,7 +300,7 @@ void check_connections(void *server_options, unsigned int task_id) {
                 } else {
                     /* we got count bytes of data from the client */
                     //XXX Here must access the type field and do a switch case statement to handle types
-                    uint8_t message_type = buf[0];
+                    uint8_t message_type = 3;//buf[0]; //XXX -fix me: was causing a bug during upload
                     switch (message_type)
                     {
                     case MSGTYPE_SETUP:
