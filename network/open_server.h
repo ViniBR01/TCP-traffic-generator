@@ -11,6 +11,8 @@ struct node {
   int socket;
   struct sockaddr_in client_addr;
   int pending_data;
+  int is_file_transfer;
+  
   struct node *next;
 };
 

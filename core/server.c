@@ -80,9 +80,6 @@ int server(options_t *options) {
       traffic_arg->remote_ip = options->remote_ip;
       traffic_arg->port = options->port;
       traffic_arg->mode = options->mode;
-      struct timeval id_time;
-      gettimeofday(&id_time, NULL);
-      traffic_arg->unique_id = (uint32_t )id_time.tv_sec;
 
       int retval = create_traffic(traffic_arg);
       break;

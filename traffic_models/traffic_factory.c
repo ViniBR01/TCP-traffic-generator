@@ -8,6 +8,7 @@
 #include <errno.h>  //defines external errno var and the values it can take on
 #include <string.h> //memcpy(), memset(), and the strlen() family
 #include <getopt.h> //external optarg, opterr, optind, and getopt() function
+#include <sys/time.h>
 
 #include "traffic_factory.h"
 //#include "m_fixed_periodic.h"
@@ -20,6 +21,11 @@ void send_file_task(void *p, unsigned int task_id);
 
 int create_traffic(traffic_t *traffic_parameters) {
     //for the fixed periodic, must create a periodic task
+    /* Get unique ID for this file transfer */
+    struct timeval id_time;
+    gettimeofday(&id_time, NULL);
+    traffic_parameters->unique_id = (uint32_t )id_time.tv_sec;
+
     create_task(periodic_task, (void *)traffic_parameters, STATE_WAITING, 1000000);
     return EXIT_SUCCESS;
 }

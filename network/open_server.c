@@ -50,6 +50,7 @@ void add(struct node *head, int socket, struct sockaddr_in addr) {
   new_node->client_addr = addr;
   new_node->pending_data = 0;
   new_node->next = head->next;
+  new_node->is_file_transfer = 0; //not known yet
   head->next = new_node;
 }
 
@@ -306,7 +307,13 @@ void check_connections(void *server_options, unsigned int task_id) {
                 } else {
                     /* we got count bytes of data from the client */
                     //XXX Here must access the type field and do a switch case statement to handle types
-                    uint8_t message_type = buf[0]; //XXX -fix me: was causing a bug during upload
+                    uint8_t message_type;
+                    if (current->is_file_transfer == 0) {
+                        message_type = buf[0]; //XXX -fix me: was causing a bug during upload
+                    } else {
+                        current->is_file_transfer = 1;
+                        message_type = MSGTYPE_FILE_TRANSFER;
+                    }
                     switch (message_type)
                     {
                     case MSGTYPE_SETUP:

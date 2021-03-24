@@ -7,6 +7,7 @@
 
 #define MSGTYPE_SETUP 1
 #define MSGTYPE_DIGEST 2
+#define MSGTYPE_FILE_TRANSFER 3
 
 /* Struct to control the message transmission */
 typedef struct {
