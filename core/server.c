@@ -53,7 +53,7 @@ int server(options_t *options) {
       create_task(send_message, message_arg, STATE_READY, -1);
 
       /* Start a server to receive incoming messages */
-      server_t *server_options = setup_server(8080);
+      server_t *server_options = setup_server(options->port);
       create_task(check_connections, (void *) server_options, STATE_READY, -1);
 
       break;
