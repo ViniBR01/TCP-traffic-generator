@@ -12,14 +12,14 @@ echo "Starting experiments!"
 
 trap "pkill start-server" EXIT
 
-./start-server -i 192.168.0.101 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.102 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.103 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.104 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.105 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.106 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.107 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.108 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.102 -p 8080 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.103 -p 8080 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.104 -p 8080 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.105 -p 8080 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.106 -p 8080 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.107 -p 8080 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.108 -p 8080 -f $filesize -t $periodtime &
+./start-server -i 192.168.0.109 -p 8080 -f $filesize -t $periodtime &
 
 sleep $runtime
 exit 0
