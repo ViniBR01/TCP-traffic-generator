@@ -5,9 +5,9 @@
 #include <inttypes.h>
 #include <string.h>
 
-#define MSGTYPE_SETUP 1
-#define MSGTYPE_DIGEST 2
-#define MSGTYPE_FILE_TRANSFER 3
+#define MSGTYPE_SETUP 93
+#define MSGTYPE_DIGEST 94
+#define MSGTYPE_FILE_TRANSFER 95
 
 /* Struct to control the message transmission */
 typedef struct {
