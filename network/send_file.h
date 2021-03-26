@@ -2,7 +2,7 @@
 
 /* Public struct with the minimum information to call this component */
 typedef struct {
-    int             file_size;
+    uint64_t        file_size;
     int             max_chunk_size;
     char           *remote_addr;
     unsigned short  remote_port;

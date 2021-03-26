@@ -28,7 +28,7 @@ typedef struct {
 } file_status_t;
 
 void fill_buffer(char *buffer, int length);
-int mymin(int num1, int num2);
+int mymin(uint64_t num1, int num2);
 
 void start_file_transfer(void *file_info_in, unsigned int task_id){
     verbosity("Inside of the start_file_transfer function.\n", 3);
@@ -129,9 +129,9 @@ void send_file_chunk(void *file_status_in, unsigned int task_id) {
     /* Here we have access to a socket, a sendbuffer, a file size and how much was already sent */
     /* Check if file has already finished transmitting */
     file_status_t *file_status = (file_status_t *) file_status_in;
-    int remaining_size = (int) file_status->file_info->file_size - (int) file_status->already_sent;
+    uint64_t remaining_size = (uint64_t) file_status->file_info->file_size - (uint64_t) file_status->already_sent;
 
-    if (remaining_size <= 0) {
+    if (remaining_size == 0) {
         /* Check if socket buffer is empty or still has data to be consumed */
         int pending = 0;
         int err = ioctl(file_status->my_socket, SIOCOUTQ, &pending);
@@ -178,7 +178,7 @@ void send_file_chunk(void *file_status_in, unsigned int task_id) {
             }
         } else {
             //account for amount of data sent
-            file_status->already_sent += count;
+            file_status->already_sent += (uint64_t)count;
         }
     }
     return;
@@ -211,8 +211,8 @@ void fill_buffer(char *buffer, int length) {
     return;
 }
 
-int mymin(int num1, int num2) {
-    if (num1 >= num2) {
+int mymin(uint64_t num1, int num2) {
+    if (num1 >= (uint64_t)num2) {
         return num1;
     } else {
         return num2;
