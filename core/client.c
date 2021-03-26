@@ -18,7 +18,7 @@ int client(options_t *options) {
     }
 
     /* XXX do needful stuff */
-    server_t *server_options = setup_server(8080);
+    server_t *server_options = setup_server(options->port);
     create_task(check_connections, (void *) server_options, STATE_READY, -1);
 
     /* Now start scheduler */
