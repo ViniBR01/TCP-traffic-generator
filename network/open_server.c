@@ -187,7 +187,7 @@ void check_connections(void *server_options, unsigned int task_id) {
         }
     }
 
-    time_out.tv_usec = 0; /* 1-tenth of a second timeout */
+    time_out.tv_usec = 100; /* timeout is necessary to reduce the CPU usage per process */
     time_out.tv_sec = 0;
 
     /* invoke select, make sure to pass max+1 !!! */
