@@ -1,2 +1,6 @@
-./run_experiment
-./run_experiment
+./run_experiment 20 1000 120 1
+./run_experiment 40 1000 120 1
+./run_experiment 60 1000 120 1
+./run_experiment 80 1000 120 1
+./run_experiment 100 1000 120 1
+./run_experiment 120 1000 120 1
