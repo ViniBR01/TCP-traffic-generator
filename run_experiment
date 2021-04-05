@@ -4,22 +4,51 @@
 # Before running for the first time do: chmod 755 run_experiment
 # ref: https://spin.atomicobject.com/2017/08/24/start-stop-bash-background-process/
 
-filesize=100
-periodtime=1000
-runtime=5s
+filesize=$1
+periodtime=$2
+runtime=$3
+mode=$4
 
 echo "Starting experiments!"
 
 trap "pkill start-server" EXIT
 
-./start-server -i 192.168.0.102 -p 8080 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.103 -p 8080 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.104 -p 8080 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.105 -p 8080 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.106 -p 8080 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.107 -p 8080 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.108 -p 8080 -f $filesize -t $periodtime &
-./start-server -i 192.168.0.109 -p 8080 -f $filesize -t $periodtime &
+#server01
+./start-server -i 192.168.0.102 -p 10102 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.103 -p 10103 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.104 -p 10104 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.105 -p 10105 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.106 -p 10106 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.107 -p 10107 -f $filesize -t $periodtime -l $runtime -m $mode &
+#server02
+./start-server -i 192.168.0.202 -p 10202 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.203 -p 10203 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.204 -p 10204 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.205 -p 10205 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.206 -p 10206 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.207 -p 10207 -f $filesize -t $periodtime -l $runtime -m $mode &
+#server03
+./start-server -i 192.168.0.132 -p 10132 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.133 -p 10133 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.134 -p 10134 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.135 -p 10135 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.136 -p 10136 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.137 -p 10137 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.138 -p 10138 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.139 -p 10139 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.140 -p 10140 -f $filesize -t $periodtime -l $runtime -m $mode &
+#server04
+./start-server -i 192.168.0.162 -p 10162 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.163 -p 10163 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.164 -p 10164 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.165 -p 10165 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.166 -p 10166 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.167 -p 10167 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.168 -p 10168 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.169 -p 10169 -f $filesize -t $periodtime -l $runtime -m $mode &
+./start-server -i 192.168.0.170 -p 10170 -f $filesize -t $periodtime -l $runtime -m $mode &
 
-sleep $runtime
+echo "Wait for experiments to end!"
+sleep $((runtime + 10))s
+echo "Bye."
 exit 0
