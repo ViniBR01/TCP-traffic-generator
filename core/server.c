@@ -91,6 +91,7 @@ int server(options_t *options) {
   /* Now, start scheduler */
   while(1) {
     scheduler();
+    usleep(200);
   }
 
   return EXIT_SUCCESS;
